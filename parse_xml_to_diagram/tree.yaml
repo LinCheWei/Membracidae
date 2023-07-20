@@ -1,0 +1,682 @@
+- items
+  - count: 1
+  - item
+    - name: ObjectCount
+    - type_name: gh_int32
+    - type_code: 3
+    - text: 4
+- chunks
+  - count: 4
+  - chunk
+    - name: Object
+    - index: 0
+    - items
+      - count: 2
+      - item
+        - name: GUID
+        - type_name: gh_guid
+        - type_code: 9
+        - text: 57da07bd-ecab-415d-9d86-af36d7073abc
+      - item
+        - name: Name
+        - type_name: gh_string
+        - type_code: 10
+        - text: Number Slider
+    - chunks
+      - count: 1
+      - chunk
+        - name: Container
+        - items
+          - count: 6
+          - item
+            - name: Description
+            - type_name: gh_string
+            - type_code: 10
+            - text: Numeric slider for single values
+          - item
+            - name: InstanceGuid
+            - type_name: gh_guid
+            - type_code: 9
+            - text: f160d27d-3b0d-48fe-814c-fcf73de8e395
+          - item
+            - name: Name
+            - type_name: gh_string
+            - type_code: 10
+            - text: Number Slider
+          - item
+            - name: NickName
+            - type_name: gh_string
+            - type_code: 10
+          - item
+            - name: Optional
+            - type_name: gh_bool
+            - type_code: 1
+            - text: false
+          - item
+            - name: SourceCount
+            - type_name: gh_int32
+            - type_code: 3
+            - text: 0
+        - chunks
+          - count: 2
+          - chunk
+            - name: Attributes
+            - items
+              - count: 2
+              - item
+                - name: Bounds
+                - type_name: gh_drawing_rectanglef
+                - type_code: 35
+                - X
+                  - text: 470
+                - Y
+                  - text: 113
+                - W
+                  - text: 160
+                - H
+                  - text: 20
+              - item
+                - name: Pivot
+                - type_name: gh_drawing_pointf
+                - type_code: 31
+                - X
+                  - text: 470
+                - Y
+                  - text: 113.3333
+          - chunk
+            - name: Slider
+            - items
+              - count: 7
+              - item
+                - name: Digits
+                - type_name: gh_int32
+                - type_code: 3
+                - text: 3
+              - item
+                - name: GripDisplay
+                - type_name: gh_int32
+                - type_code: 3
+                - text: 1
+              - item
+                - name: Interval
+                - type_name: gh_int32
+                - type_code: 3
+                - text: 0
+              - item
+                - name: Max
+                - type_name: gh_double
+                - type_code: 6
+                - text: 1
+              - item
+                - name: Min
+                - type_name: gh_double
+                - type_code: 6
+                - text: 0
+              - item
+                - name: SnapCount
+                - type_name: gh_int32
+                - type_code: 3
+                - text: 0
+              - item
+                - name: Value
+                - type_name: gh_double
+                - type_code: 6
+                - text: 0.25
+  - chunk
+    - name: Object
+    - index: 1
+    - items
+      - count: 2
+      - item
+        - name: GUID
+        - type_name: gh_guid
+        - type_code: 9
+        - text: a0d62394-a118-422d-abb3-6af115c75b25
+      - item
+        - name: Name
+        - type_name: gh_string
+        - type_code: 10
+        - text: Addition
+    - chunks
+      - count: 1
+      - chunk
+        - name: Container
+        - items
+          - count: 4
+          - item
+            - name: Description
+            - type_name: gh_string
+            - type_code: 10
+            - text: Mathematical addition
+          - item
+            - name: InstanceGuid
+            - type_name: gh_guid
+            - type_code: 9
+            - text: 880b720b-e7c5-4cb4-9e79-c7b39a3035cd
+          - item
+            - name: Name
+            - type_name: gh_string
+            - type_code: 10
+            - text: Addition
+          - item
+            - name: NickName
+            - type_name: gh_string
+            - type_code: 10
+            - text: A+B
+        - chunks
+          - count: 2
+          - chunk
+            - name: Attributes
+            - items
+              - count: 2
+              - item
+                - name: Bounds
+                - type_name: gh_drawing_rectanglef
+                - type_code: 35
+                - X
+                  - text: 681
+                - Y
+                  - text: 111
+                - W
+                  - text: 65
+                - H
+                  - text: 44
+              - item
+                - name: Pivot
+                - type_name: gh_drawing_pointf
+                - type_code: 31
+                - X
+                  - text: 712
+                - Y
+                  - text: 133
+          - chunk
+            - name: ParameterData
+            - items
+              - count: 5
+              - item
+                - name: InputCount
+                - type_name: gh_int32
+                - type_code: 3
+                - text: 2
+              - item
+                - name: InputId
+                - index: 0
+                - type_name: gh_guid
+                - type_code: 9
+                - text: 8ec86459-bf01-4409-baee-174d0d2b13d0
+              - item
+                - name: InputId
+                - index: 1
+                - type_name: gh_guid
+                - type_code: 9
+                - text: 8ec86459-bf01-4409-baee-174d0d2b13d0
+              - item
+                - name: OutputCount
+                - type_name: gh_int32
+                - type_code: 3
+                - text: 1
+              - item
+                - name: OutputId
+                - index: 0
+                - type_name: gh_guid
+                - type_code: 9
+                - text: 8ec86459-bf01-4409-baee-174d0d2b13d0
+            - chunks
+              - count: 3
+              - chunk
+                - name: InputParam
+                - index: 0
+                - items
+                  - count: 7
+                  - item
+                    - name: Description
+                    - type_name: gh_string
+                    - type_code: 10
+                    - text: First item for addition
+                  - item
+                    - name: InstanceGuid
+                    - type_name: gh_guid
+                    - type_code: 9
+                    - text: 76336b57-e17a-49d1-8dbe-cb804ce2b1f5
+                  - item
+                    - name: Name
+                    - type_name: gh_string
+                    - type_code: 10
+                    - text: A
+                  - item
+                    - name: NickName
+                    - type_name: gh_string
+                    - type_code: 10
+                    - text: A
+                  - item
+                    - name: Optional
+                    - type_name: gh_bool
+                    - type_code: 1
+                    - text: true
+                  - item
+                    - name: Source
+                    - index: 0
+                    - type_name: gh_guid
+                    - type_code: 9
+                    - text: f160d27d-3b0d-48fe-814c-fcf73de8e395
+                  - item
+                    - name: SourceCount
+                    - type_name: gh_int32
+                    - type_code: 3
+                    - text: 1
+                - chunks
+                  - count: 1
+                  - chunk
+                    - name: Attributes
+                    - items
+                      - count: 2
+                      - item
+                        - name: Bounds
+                        - type_name: gh_drawing_rectanglef
+                        - type_code: 35
+                        - X
+                          - text: 683
+                        - Y
+                          - text: 113
+                        - W
+                          - text: 14
+                        - H
+                          - text: 20
+                      - item
+                        - name: Pivot
+                        - type_name: gh_drawing_pointf
+                        - type_code: 31
+                        - X
+                          - text: 691.5
+                        - Y
+                          - text: 123
+              - chunk
+                - name: InputParam
+                - index: 1
+                - items
+                  - count: 7
+                  - item
+                    - name: Description
+                    - type_name: gh_string
+                    - type_code: 10
+                    - text: Second item for addition
+                  - item
+                    - name: InstanceGuid
+                    - type_name: gh_guid
+                    - type_code: 9
+                    - text: ca7d7843-17a2-43c1-bf96-fd703c1c1680
+                  - item
+                    - name: Name
+                    - type_name: gh_string
+                    - type_code: 10
+                    - text: B
+                  - item
+                    - name: NickName
+                    - type_name: gh_string
+                    - type_code: 10
+                    - text: B
+                  - item
+                    - name: Optional
+                    - type_name: gh_bool
+                    - type_code: 1
+                    - text: true
+                  - item
+                    - name: Source
+                    - index: 0
+                    - type_name: gh_guid
+                    - type_code: 9
+                    - text: 4736d313-2f80-4b2d-866e-b44af8112c60
+                  - item
+                    - name: SourceCount
+                    - type_name: gh_int32
+                    - type_code: 3
+                    - text: 1
+                - chunks
+                  - count: 1
+                  - chunk
+                    - name: Attributes
+                    - items
+                      - count: 2
+                      - item
+                        - name: Bounds
+                        - type_name: gh_drawing_rectanglef
+                        - type_code: 35
+                        - X
+                          - text: 683
+                        - Y
+                          - text: 133
+                        - W
+                          - text: 14
+                        - H
+                          - text: 20
+                      - item
+                        - name: Pivot
+                        - type_name: gh_drawing_pointf
+                        - type_code: 31
+                        - X
+                          - text: 691.5
+                        - Y
+                          - text: 143
+              - chunk
+                - name: OutputParam
+                - index: 0
+                - items
+                  - count: 6
+                  - item
+                    - name: Description
+                    - type_name: gh_string
+                    - type_code: 10
+                    - text: Result of addition
+                  - item
+                    - name: InstanceGuid
+                    - type_name: gh_guid
+                    - type_code: 9
+                    - text: f31b1c79-c755-4255-9b44-0d125a0935f8
+                  - item
+                    - name: Name
+                    - type_name: gh_string
+                    - type_code: 10
+                    - text: Result
+                  - item
+                    - name: NickName
+                    - type_name: gh_string
+                    - type_code: 10
+                    - text: R
+                  - item
+                    - name: Optional
+                    - type_name: gh_bool
+                    - type_code: 1
+                    - text: false
+                  - item
+                    - name: SourceCount
+                    - type_name: gh_int32
+                    - type_code: 3
+                    - text: 0
+                - chunks
+                  - count: 1
+                  - chunk
+                    - name: Attributes
+                    - items
+                      - count: 2
+                      - item
+                        - name: Bounds
+                        - type_name: gh_drawing_rectanglef
+                        - type_code: 35
+                        - X
+                          - text: 727
+                        - Y
+                          - text: 113
+                        - W
+                          - text: 17
+                        - H
+                          - text: 40
+                      - item
+                        - name: Pivot
+                        - type_name: gh_drawing_pointf
+                        - type_code: 31
+                        - X
+                          - text: 735.5
+                        - Y
+                          - text: 133
+  - chunk
+    - name: Object
+    - index: 2
+    - items
+      - count: 2
+      - item
+        - name: GUID
+        - type_name: gh_guid
+        - type_code: 9
+        - text: 57da07bd-ecab-415d-9d86-af36d7073abc
+      - item
+        - name: Name
+        - type_name: gh_string
+        - type_code: 10
+        - text: Number Slider
+    - chunks
+      - count: 1
+      - chunk
+        - name: Container
+        - items
+          - count: 6
+          - item
+            - name: Description
+            - type_name: gh_string
+            - type_code: 10
+            - text: Numeric slider for single values
+          - item
+            - name: InstanceGuid
+            - type_name: gh_guid
+            - type_code: 9
+            - text: 4736d313-2f80-4b2d-866e-b44af8112c60
+          - item
+            - name: Name
+            - type_name: gh_string
+            - type_code: 10
+            - text: Number Slider
+          - item
+            - name: NickName
+            - type_name: gh_string
+            - type_code: 10
+          - item
+            - name: Optional
+            - type_name: gh_bool
+            - type_code: 1
+            - text: false
+          - item
+            - name: SourceCount
+            - type_name: gh_int32
+            - type_code: 3
+            - text: 0
+        - chunks
+          - count: 2
+          - chunk
+            - name: Attributes
+            - items
+              - count: 2
+              - item
+                - name: Bounds
+                - type_name: gh_drawing_rectanglef
+                - type_code: 35
+                - X
+                  - text: 470
+                - Y
+                  - text: 136
+                - W
+                  - text: 160
+                - H
+                  - text: 20
+              - item
+                - name: Pivot
+                - type_name: gh_drawing_pointf
+                - type_code: 31
+                - X
+                  - text: 470.9519
+                - Y
+                  - text: 136.2095
+          - chunk
+            - name: Slider
+            - items
+              - count: 7
+              - item
+                - name: Digits
+                - type_name: gh_int32
+                - type_code: 3
+                - text: 3
+              - item
+                - name: GripDisplay
+                - type_name: gh_int32
+                - type_code: 3
+                - text: 1
+              - item
+                - name: Interval
+                - type_name: gh_int32
+                - type_code: 3
+                - text: 0
+              - item
+                - name: Max
+                - type_name: gh_double
+                - type_code: 6
+                - text: 1
+              - item
+                - name: Min
+                - type_name: gh_double
+                - type_code: 6
+                - text: 0
+              - item
+                - name: SnapCount
+                - type_name: gh_int32
+                - type_code: 3
+                - text: 0
+              - item
+                - name: Value
+                - type_name: gh_double
+                - type_code: 6
+                - text: 0.25
+  - chunk
+    - name: Object
+    - index: 3
+    - items
+      - count: 2
+      - item
+        - name: GUID
+        - type_name: gh_guid
+        - type_code: 9
+        - text: 59e0b89a-e487-49f8-bab8-b5bab16be14c
+      - item
+        - name: Name
+        - type_name: gh_string
+        - type_code: 10
+        - text: Panel
+    - chunks
+      - count: 1
+      - chunk
+        - name: Container
+        - items
+          - count: 9
+          - item
+            - name: Description
+            - type_name: gh_string
+            - type_code: 10
+            - text: A panel for custom notes and text values
+          - item
+            - name: InstanceGuid
+            - type_name: gh_guid
+            - type_code: 9
+            - text: ad22746c-4c72-4fd1-9fc9-d119aab762c2
+          - item
+            - name: Name
+            - type_name: gh_string
+            - type_code: 10
+            - text: Panel
+          - item
+            - name: NickName
+            - type_name: gh_string
+            - type_code: 10
+          - item
+            - name: Optional
+            - type_name: gh_bool
+            - type_code: 1
+            - text: false
+          - item
+            - name: ScrollRatio
+            - type_name: gh_double
+            - type_code: 6
+            - text: 0
+          - item
+            - name: Source
+            - index: 0
+            - type_name: gh_guid
+            - type_code: 9
+            - text: f31b1c79-c755-4255-9b44-0d125a0935f8
+          - item
+            - name: SourceCount
+            - type_name: gh_int32
+            - type_code: 3
+            - text: 1
+          - item
+            - name: UserText
+            - type_name: gh_string
+            - type_code: 10
+            - text: Double click to edit panel content…
+        - chunks
+          - count: 2
+          - chunk
+            - name: Attributes
+            - items
+              - count: 5
+              - item
+                - name: Bounds
+                - type_name: gh_drawing_rectanglef
+                - type_code: 35
+                - X
+                  - text: 787
+                - Y
+                  - text: 82
+                - W
+                  - text: 160
+                - H
+                  - text: 100
+              - item
+                - name: MarginLeft
+                - type_name: gh_int32
+                - type_code: 3
+                - text: 0
+              - item
+                - name: MarginRight
+                - type_name: gh_int32
+                - type_code: 3
+                - text: 0
+              - item
+                - name: MarginTop
+                - type_name: gh_int32
+                - type_code: 3
+                - text: 0
+              - item
+                - name: Pivot
+                - type_name: gh_drawing_pointf
+                - type_code: 31
+                - X
+                  - text: 787.9225
+                - Y
+                  - text: 82.24162
+          - chunk
+            - name: PanelProperties
+            - items
+              - count: 7
+              - item
+                - name: Colour
+                - type_name: gh_drawing_color
+                - type_code: 36
+                - ARGB
+                  - text: 255;255;250;90
+              - item
+                - name: DrawIndices
+                - type_name: gh_bool
+                - type_code: 1
+                - text: true
+              - item
+                - name: DrawPaths
+                - type_name: gh_bool
+                - type_code: 1
+                - text: true
+              - item
+                - name: Multiline
+                - type_name: gh_bool
+                - type_code: 1
+                - text: true
+              - item
+                - name: SpecialCodes
+                - type_name: gh_bool
+                - type_code: 1
+                - text: false
+              - item
+                - name: Stream
+                - type_name: gh_bool
+                - type_code: 1
+                - text: false
+              - item
+                - name: Wrap
+                - type_name: gh_bool
+                - type_code: 1
+                - text: true

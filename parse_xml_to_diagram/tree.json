@@ -1,0 +1,35 @@
+{
+    "0": {
+        "Bounds": {
+            "Description": "A panel for custom notes and text values",
+            "Digits": "3",
+            "DrawIndices": "true",
+            "DrawPaths": "true",
+            "GUID": "59e0b89a-e487-49f8-bab8-b5bab16be14c",
+            "GripDisplay": "1",
+            "InputCount": "2",
+            "InstanceGuid": "ad22746c-4c72-4fd1-9fc9-d119aab762c2",
+            "Interval": "0",
+            "MarginLeft": "0",
+            "MarginRight": "0",
+            "MarginTop": "0",
+            "Max": "1",
+            "Min": "0",
+            "Multiline": "true",
+            "Name": "Panel",
+            "NickName": "R",
+            "Optional": "false",
+            "OutputCount": "1",
+            "ScrollRatio": "0",
+            "SnapCount": "0",
+            "SourceCount": "1",
+            "SpecialCodes": "false",
+            "Stream": "false",
+            "UserText": "Double click to edit panel content\u2026",
+            "Value": "0.25",
+            "Wrap": "true"
+        },
+        "InstanceGuid": "57da07bd-ecab-415d-9d86-af36d7073abc",
+        "Name": "Number Slider"
+    }
+}
