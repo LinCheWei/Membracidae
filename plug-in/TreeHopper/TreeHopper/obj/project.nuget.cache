@@ -1,0 +1,13 @@
+{
+  "version": 2,
+  "dgSpecHash": "usaabsL8kmQ3/ZD9gO/eM1CfcSgPiRXidLLnaEqfeDgZZ+WhgBa6rKsguONF1iR6xn56kZv6EisI7+d6Ic/3+g==",
+  "success": true,
+  "projectFilePath": "C:\\Users\\chewei\\Documents\\GitHub\\Membracidae\\plug-in\\TreeHopper\\TreeHopper\\TreeHopper.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\chewei\\.nuget\\packages\\grasshopper\\7.13.21348.13001\\grasshopper.7.13.21348.13001.nupkg.sha512",
+    "C:\\Users\\chewei\\.nuget\\packages\\libgit2sharp\\0.27.2\\libgit2sharp.0.27.2.nupkg.sha512",
+    "C:\\Users\\chewei\\.nuget\\packages\\libgit2sharp.nativebinaries\\2.0.320\\libgit2sharp.nativebinaries.2.0.320.nupkg.sha512",
+    "C:\\Users\\chewei\\.nuget\\packages\\rhinocommon\\7.13.21348.13001\\rhinocommon.7.13.21348.13001.nupkg.sha512"
+  ],
+  "logs": []
+}
