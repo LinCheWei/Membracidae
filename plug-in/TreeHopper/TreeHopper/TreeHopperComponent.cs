@@ -6,8 +6,9 @@ using System.Collections.Generic;
 using System.Xml;
 using LibGit2Sharp;
 using System.Drawing;
-using Rhino.UI;
-
+using System.IO;
+using System.Text;
+using Microsoft.XmlDiffPatch;
 
 namespace TreeHopper
 {
@@ -23,7 +24,7 @@ namespace TreeHopper
         public TreeHopperComponent()
           : base("TreeHopper", "THZ",
             "test component",
-            "Treehopper", "Subcategory")
+            "Treehopper", "testing")
         {
         }
 
@@ -45,7 +46,6 @@ namespace TreeHopper
         }
 
         bool open;
-
 
         private void terminationCallback(GH_Document doc)
         {
@@ -71,11 +71,11 @@ namespace TreeHopper
         /// to store data in output parameters.</param>
         protected override void SolveInstance(IGH_DataAccess DA)
         {
-            List<string> diffID = new List<string>();
+            GH_Document doc = Instances.ActiveCanvas.Document;
             DA.GetData(0, ref open);
-            GH_Document doc = Grasshopper.Instances.ActiveCanvas.Document;
-            string filename = System.IO.Path.GetFileName(doc.FilePath);
-            string path = System.IO.Path.GetDirectoryName(doc.FilePath);
+            List<string> diffID = new List<string>();
+            string filename = Path.GetFileName(doc.FilePath);
+            string path = Path.GetDirectoryName(doc.FilePath);
             List<Tree> targets = new List<Tree>(); 
             List<string> versionId = new List<string>();
 
@@ -103,7 +103,6 @@ namespace TreeHopper
                             }
                         }
                     }
-
 
                     /// Create value list
                     bool createVallist = true;
@@ -140,12 +139,46 @@ namespace TreeHopper
                     }
                     DA.GetDataList(1, diffID);
 
-                    List<string> tt = new List<string>();
-                    tt.Add(filename);
 
-                    Patch difference = repo.Diff.Compare<Patch>(targets[int.Parse(diffID[0])], DiffTargets.WorkingDirectory, tt);
-                    DA.SetData(0, difference.Content);
-                }
+                    // Read full string from selected blob
+                    var tarBlob = repo.Lookup<Blob>(targets[int.Parse(diffID[0])] .Sha+ ":" + filename);
+
+                    /*
+                    XmlReader tarReader = XmlReader.Create(tarBlob.GetContentStream());
+                    XmlReader srcReader = XmlReader.Create(doc.FilePath);
+                   
+                    XmlDocument tarDoc = new XmlDocument();
+                    XmlDocument srcDoc = new XmlDocument();
+                    tarDoc.ReadNode(tarReader);
+                    srcDoc.ReadNode(srcReader);
+
+                    message = "";
+                    foreach (XmlNode node in srcDoc.ChildNodes)
+                    {
+                        message += node.FirstChild.Name + "\r\n";
+                    }
+                    DA.SetData(0, message);
+
+                    */
+
+                    // Initialize xmldiff
+                    XmlDiff diff = new XmlDiff();
+
+                    // Initialize xmlwriter and settingss
+                    var settings = new XmlWriterSettings();
+                    settings.OmitXmlDeclaration = true;
+                    settings.Indent = true;
+                    XmlWriter diffGram = XmlWriter.Create("diffgram.xml");
+
+                    using (var content = new StreamReader(tarBlob.GetContentStream(), Encoding.UTF8))
+                    {
+                        XmlReader tarReader = XmlReader.Create(content.ReadToEnd());
+                        XmlReader srcReader = XmlReader.Create(doc.FilePath);
+                        diff.Compare(srcReader, tarReader, diffGram);
+                        DA.SetData(0, diff.ToString());
+                    }
+                    ///Patch difference = repo.Diff.Compare<Patch>(targets[int.Parse(diffID[0])], DiffTargets.WorkingDirectory, tt);
+                }     
             }
             else
             {

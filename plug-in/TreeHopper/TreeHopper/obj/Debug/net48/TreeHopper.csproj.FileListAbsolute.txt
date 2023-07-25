@@ -35,3 +35,5 @@ C:\Users\chewei\Documents\GitHub\Membracidae\plug-in\TreeHopper\TreeHopper\obj\D
 C:\Users\chewei\Documents\GitHub\Membracidae\plug-in\TreeHopper\TreeHopper\obj\Debug\net48\TreeHopper.csproj.CopyComplete
 C:\Users\chewei\Documents\GitHub\Membracidae\plug-in\TreeHopper\TreeHopper\obj\Debug\net48\TreeHopper.gha
 C:\Users\chewei\Documents\GitHub\Membracidae\plug-in\TreeHopper\TreeHopper\obj\Debug\net48\TreeHopper.pdb
+C:\Users\chewei\Documents\GitHub\Membracidae\plug-in\TreeHopper\TreeHopper\bin\Debug\net48\XmlDiffPatch.View.dll
+C:\Users\chewei\Documents\GitHub\Membracidae\plug-in\TreeHopper\TreeHopper\bin\Debug\net48\XmlDiffPatch.dll

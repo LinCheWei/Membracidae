@@ -114,6 +114,17 @@
         "build": {
           "build/RhinoCommon.targets": {}
         }
+      },
+      "XMLDiffPatch/1.0.8.28": {
+        "type": "package",
+        "compile": {
+          "lib/net/XmlDiffPatch.View.dll": {},
+          "lib/net/XmlDiffPatch.dll": {}
+        },
+        "runtime": {
+          "lib/net/XmlDiffPatch.View.dll": {},
+          "lib/net/XmlDiffPatch.dll": {}
+        }
       }
     }
   },
@@ -201,12 +212,26 @@
         "rhinocommon.nuspec",
         "rhinocommon.png"
       ]
+    },
+    "XMLDiffPatch/1.0.8.28": {
+      "sha512": "YkheWbBdFWKmtexnCGm2KbKanXrGxfbQDtM3/W//D5CWqps7OLZD5Lfq95apb5Zv3NCMoFiwschSK5vS1EoMOw==",
+      "type": "package",
+      "path": "xmldiffpatch/1.0.8.28",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "lib/net/XmlDiffPatch.View.dll",
+        "lib/net/XmlDiffPatch.dll",
+        "xmldiffpatch.1.0.8.28.nupkg.sha512",
+        "xmldiffpatch.nuspec"
+      ]
     }
   },
   "projectFileDependencyGroups": {
     ".NETFramework,Version=v4.8": [
       "Grasshopper >= 7.13.21348.13001",
-      "LibGit2Sharp >= 0.27.2"
+      "LibGit2Sharp >= 0.27.2",
+      "XMLDiffPatch >= 1.0.8.28"
     ]
   },
   "packageFolders": {
@@ -261,6 +286,10 @@
           "LibGit2Sharp": {
             "target": "Package",
             "version": "[0.27.2, )"
+          },
+          "XMLDiffPatch": {
+            "target": "Package",
+            "version": "[1.0.8.28, )"
           }
         },
         "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.304\\RuntimeIdentifierGraph.json"
