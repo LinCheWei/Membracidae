@@ -82,6 +82,8 @@ namespace TreeHopper
             DA.SetData(0, path);
 
 
+
+
             if (open)
             {
                 using (var repo = new Repository(path))
@@ -174,6 +176,10 @@ namespace TreeHopper
                     {
                         XmlReader tarReader = XmlReader.Create(content.ReadToEnd());
                         XmlReader srcReader = XmlReader.Create(doc.FilePath);
+
+                        XmlDocument xdoc = new XmlDocument();
+                        XmlNode abc = xdoc.ReadNode(tarReader);
+
                         diff.Compare(srcReader, tarReader, diffGram);
                         DA.SetData(0, diff.ToString());
                     }

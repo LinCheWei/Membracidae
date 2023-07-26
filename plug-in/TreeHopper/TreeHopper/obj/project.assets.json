@@ -235,19 +235,24 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\akango\\.nuget\\packages\\": {}
+    "C:\\Users\\chewei\\.nuget\\packages\\": {},
+    "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\akango\\Documents\\github\\Membracidae\\plug-in\\TreeHopper\\TreeHopper\\TreeHopper.csproj",
+      "projectUniqueName": "C:\\Users\\chewei\\Documents\\GitHub\\Membracidae\\plug-in\\TreeHopper\\TreeHopper\\TreeHopper.csproj",
       "projectName": "TreeHopper",
-      "projectPath": "C:\\Users\\akango\\Documents\\github\\Membracidae\\plug-in\\TreeHopper\\TreeHopper\\TreeHopper.csproj",
-      "packagesPath": "C:\\Users\\akango\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\akango\\Documents\\github\\Membracidae\\plug-in\\TreeHopper\\TreeHopper\\obj\\",
+      "projectPath": "C:\\Users\\chewei\\Documents\\GitHub\\Membracidae\\plug-in\\TreeHopper\\TreeHopper\\TreeHopper.csproj",
+      "packagesPath": "C:\\Users\\chewei\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\chewei\\Documents\\GitHub\\Membracidae\\plug-in\\TreeHopper\\TreeHopper\\obj\\",
       "projectStyle": "PackageReference",
+      "fallbackFolders": [
+        "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
+      ],
       "configFilePaths": [
-        "C:\\Users\\akango\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Users\\chewei\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
       "originalTargetFrameworks": [
@@ -287,7 +292,7 @@
             "version": "[1.0.8.28, )"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.306\\RuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.304\\RuntimeIdentifierGraph.json"
       }
     }
   }
