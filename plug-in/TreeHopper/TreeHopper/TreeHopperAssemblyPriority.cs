@@ -2,54 +2,83 @@
 using Grasshopper;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Timers;
-using System.Windows.Forms.Layout;
 using System.Windows.Forms;
+using System.Windows.Forms.Layout;
 
 namespace TreeHopper
 {
-    public abstract class TreeHopperMenuItem : GH_AssemblyPriority
+    public class TreeHopperMenuItem : GH_AssemblyPriority
     {
         private System.Timers.Timer delayedLoadTimer;
-        //private static List<Tuple<string, TreeHopperMenuItem>> LoadQueue = new List<Tuple<string, TreeHopperMenuItem>>();
+        private ToolStripMenuItem treeHopperMenuItem; // New ToolStripMenuItem to be added to the menu
+        private bool isSubMenuAdded; // A flag to track if the sub-menu items are already added
 
         public override GH_LoadingInstruction PriorityLoad()
         {
-            //this.DelayedLoadMenuItems();
-            return GH_LoadingInstruction.Abort;
+            // Delayed loading of the menu item
+            DelayedLoadMenuItems();
+            return GH_LoadingInstruction.Proceed;
         }
-
 
         private void DelayedLoadMenuItems()
         {
-            this.delayedLoadTimer = new System.Timers.Timer(100.0);
-            this.delayedLoadTimer.Elapsed += new ElapsedEventHandler(this.DelayedLoadCallback);
-            this.delayedLoadTimer.Start();
+            delayedLoadTimer = new System.Timers.Timer(100.0);
+            delayedLoadTimer.Elapsed += DelayedLoadCallback;
+            delayedLoadTimer.Start();
         }
 
         private void DelayedLoadCallback(object sender, ElapsedEventArgs e)
         {
-            if (Instances.DocumentEditor == null || !this.delayedLoadTimer.Enabled)
+            if (Instances.DocumentEditor == null || !delayedLoadTimer.Enabled)
                 return;
-            this.delayedLoadTimer.Stop();
-            this.delayedLoadTimer.Elapsed -= new ElapsedEventHandler(this.DelayedLoadCallback);
+
+            delayedLoadTimer.Stop();
+            delayedLoadTimer.Elapsed -= DelayedLoadCallback;
             MenuStrip mainMenuStrip = ((Form)Instances.DocumentEditor).MainMenuStrip;
+
             lock (mainMenuStrip)
             {
-                foreach (ToolStripMenuItem parent in (ArrangedElementCollection)mainMenuStrip.Items)
+                foreach (ToolStripMenuItem parent in mainMenuStrip.Items)
                 {
-                    if (parent.Name == "Treehopper")
-                    {
+                    if (parent.Name == "TreeHopperMenu") // Check if the menu item already exists
                         return;
-                    }
                 }
-                ToolStripMenuItem parent1 = new ToolStripMenuItem("Treehopper");
-                parent1.Name = "Treehopper";
-                mainMenuStrip.Items.Add(parent1);
+
+                // Create a new ToolStripMenuItem and add it to the menu bar
+                treeHopperMenuItem = new ToolStripMenuItem("Treehopper");
+                treeHopperMenuItem.Name = "TreeHopperMenu";
+                treeHopperMenuItem.DropDownOpening += TreeHopperMenuItem_DropDownOpening;
+                mainMenuStrip.Items.Add(treeHopperMenuItem);
             }
+        }
+
+        private void TreeHopperMenuItem_DropDownOpening(object sender, EventArgs e)
+        {
+            // Check if the sub-menu items are already added
+            if (!isSubMenuAdded)
+            {
+                // Add sub-menu items or other functionality here
+                // For example:
+                ToolStripMenuItem subMenuItem1 = new ToolStripMenuItem("Cool things");
+                subMenuItem1.Click += SubMenuItem_Click;
+                treeHopperMenuItem.DropDownItems.Add(subMenuItem1);
+
+                ToolStripMenuItem subMenuItem2 = new ToolStripMenuItem("Cooler things");
+                subMenuItem2.Click += SubMenuItem_Click;
+                treeHopperMenuItem.DropDownItems.Add(subMenuItem2);
+
+                // Set the flag to true to indicate that sub-menu items are added
+                isSubMenuAdded = true;
+            }
+        }
+
+        private void SubMenuItem_Click(object sender, EventArgs e)
+        {
+            // Handle the click event of the sub-menu item here
+            // For example:
+            ToolStripMenuItem clickedItem = (ToolStripMenuItem)sender;
+            MessageBox.Show($"Clicked: {clickedItem.Text}");
         }
     }
 }
