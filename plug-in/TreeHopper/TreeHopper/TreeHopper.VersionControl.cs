@@ -10,7 +10,7 @@ using System.Xml;
 using LibGit2Sharp;
 using TreeHopper.Deserialize;
 
-namespace TreeHopper.Hopper
+namespace TreeHopper.VersionControl
 {
     public class Hopper
     {
@@ -24,19 +24,28 @@ namespace TreeHopper.Hopper
             this.FileName = Path.GetFileName(input);
             this.FilePath = Path.GetDirectoryName(input);
 
-            using (this.Repo = new Repository(FilePath))
+            this.Repo = new Repository(FilePath);
+
+            this.Commits = new List<Commit>();
+
+            /// search through commit that contains the changes of this ghx
+            var fileHistory = this.Repo.Commits.QueryBy(this.FileName, new CommitFilter { SortBy = CommitSortStrategies.Time });
+
+            /// Acquire commit info
+            foreach (LogEntry e in fileHistory)
             {
-                this.Commits = new List<Commit>();
-
-                /// search through commit that contains the changes of this ghx
-                var fileHistory = this.Repo.Commits.QueryBy(this.FileName, new CommitFilter { SortBy = CommitSortStrategies.Time });
-
-                /// Acquire commit info
-                foreach (LogEntry e in fileHistory)
-                {
-                    this.Commits.Add(e.Commit);
-                }
+                this.Commits.Add(e.Commit);
             }
+        }
+
+        public List<string> getVersionList(bool complete)
+        {
+            var list = new List<string>();
+            foreach (Commit c in this.Commits)
+            {
+                list.Add(this.getTargetSHA(c, complete));
+            }
+            return list;
         }
 
         public string getTargetSHA(Commit commit, bool complete)

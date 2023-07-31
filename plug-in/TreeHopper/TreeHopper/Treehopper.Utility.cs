@@ -16,7 +16,7 @@ namespace TreeHopper.Utility
         }
 
         public static bool AddValue(XmlNodeList nodes, Dictionary<string, string>dict)
-        {   
+        {
             if (nodes.Count > 0)
             {
                 foreach (XmlNode node in nodes)
@@ -30,7 +30,7 @@ namespace TreeHopper.Utility
                     {
                         foreach (XmlNode childNode in node.ChildNodes)
                         {
-                            value += childNode.Name + ";" + childNode.FirstChild.Value;
+                            value += childNode.Name + ";" + childNode.FirstChild.Value + ";";
                         }
                     }
                     else
@@ -39,11 +39,15 @@ namespace TreeHopper.Utility
                     }
 
                     dict.Add(name, value);
-                    
+
                 }
                 return true;
             }
-            else { return false; }
+            else
+            {
+                Console.WriteLine("Empty node you stupid");
+                return false;
+            }
         }
     }
 }

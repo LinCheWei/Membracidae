@@ -9,6 +9,10 @@ using System.Drawing;
 using System.IO;
 using System.Text;
 using Microsoft.XmlDiffPatch;
+using TreeHopper.VersionControl;
+using TreeHopper.Deserialize;
+using System.Drawing.Printing;
+using System.Linq;
 
 namespace TreeHopper
 {
@@ -42,7 +46,9 @@ namespace TreeHopper
         /// </summary>
         protected override void RegisterOutputParams(GH_Component.GH_OutputParamManager pManager)
         {
-            pManager.AddTextParameter("output", "output", "test", GH_ParamAccess.item);
+            pManager.AddTextParameter("output", "output", "test", GH_ParamAccess.list);
+            pManager.AddTextParameter("ver", "ver_params", "test", GH_ParamAccess.list);
+            pManager.AddTextParameter("comp", "comp_params", "test", GH_ParamAccess.list);
         }
 
         bool open;
@@ -73,19 +79,52 @@ namespace TreeHopper
         {
             GH_Document doc = Instances.ActiveCanvas.Document;
             DA.GetData(0, ref open);
-            List<string> diffID = new List<string>();
-            string filename = Path.GetFileName(doc.FilePath);
-            string path = Path.GetDirectoryName(doc.FilePath);
-            List<Tree> targets = new List<Tree>(); 
             List<string> versionId = new List<string>();
-
-            DA.SetData(0, path);
-
-
-
 
             if (open)
             {
+                Hopper root = new Hopper(doc.FilePath);
+                versionId = root.getVersionList(true);
+                DA.SetDataList(0, versionId);
+
+                List<string> param = new List<string>();
+                GhxVersion local = new GhxVersion(doc.FilePath);
+                Dictionary<string, string> dict = local.Parameters();
+                
+                foreach (KeyValuePair<string, string> kvp in dict)
+                {
+                    param.Add(kvp.ToString());   
+                }
+
+                DA.SetDataList(1, param);
+
+                List<string> cp = new List<string>();
+
+                foreach (Component c in local.Components())
+                {
+                    foreach (KeyValuePair<string, string> kvp in c.Parameters())
+                    {
+                        cp.Add(kvp.ToString());
+                    }
+                    
+                    foreach (ComponentIO cio in c.IOs())
+                    {
+                        foreach (KeyValuePair<string, string> pair in cio.Parameters())
+                        {
+                            cp.Add(pair.ToString());
+                        }
+                    }
+                    
+
+                    cp.Add("");
+                }
+
+                DA.SetDataList(2, cp);
+
+
+
+
+                /*
                 using (var repo = new Repository(path))
                 {
                     string message = "";
@@ -141,11 +180,11 @@ namespace TreeHopper
                     }
                     DA.GetDataList(1, diffID);
 
-
+                    
                     // Read full string from selected blob
                     var tarBlob = repo.Lookup<Blob>(targets[int.Parse(diffID[0])] .Sha+ ":" + filename);
 
-                    /*
+                    
                     XmlReader tarReader = XmlReader.Create(tarBlob.GetContentStream());
                     XmlReader srcReader = XmlReader.Create(doc.FilePath);
                    
@@ -161,7 +200,7 @@ namespace TreeHopper
                     }
                     DA.SetData(0, message);
 
-                    */
+                    
 
                     // Initialize xmldiff
                     XmlDiff diff = new XmlDiff();
@@ -183,8 +222,10 @@ namespace TreeHopper
                         diff.Compare(srcReader, tarReader, diffGram);
                         DA.SetData(0, diff.ToString());
                     }
-                    ///Patch difference = repo.Diff.Compare<Patch>(targets[int.Parse(diffID[0])], DiffTargets.WorkingDirectory, tt);
-                }     
+                    //Patch difference = repo.Diff.Compare<Patch>(targets[int.Parse(diffID[0])], DiffTargets.WorkingDirectory, tt);
+                    
+                }
+                */
             }
             else
             {

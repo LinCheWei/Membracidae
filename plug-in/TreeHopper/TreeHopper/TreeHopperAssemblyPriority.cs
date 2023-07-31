@@ -17,7 +17,7 @@ namespace TreeHopper
         public override GH_LoadingInstruction PriorityLoad()
         {
             // Delayed loading of the menu item
-            DelayedLoadMenuItems();
+            //DelayedLoadMenuItems();
             return GH_LoadingInstruction.Proceed;
         }
 

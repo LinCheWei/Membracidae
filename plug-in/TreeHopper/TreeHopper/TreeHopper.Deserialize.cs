@@ -11,35 +11,40 @@ using System.Xml;
 using System.Xml.Linq;
 using GH_IO.Serialization;
 using TreeHopper.Utility;
+using System.Security.Cryptography;
 
 namespace TreeHopper.Deserialize
 {
     public class GhxVersion
     {
-        private XmlNode SrcNodes;
-        private List<Component> Components;
-        private Dictionary<string, string> Parameters;
+        private XmlNode srcNodes;
+        private List<Component> components;
+        private Dictionary<string, string> parameters;
+
+        public Dictionary<string, string> Parameters() { return parameters; }
+        public List<Component> Components() { return components; }
+        public XmlNode SrcNodes() { return srcNodes; } 
 
         public GhxVersion(Stream stream) 
         {
             using (var content = new StreamReader(stream, Encoding.UTF8))
             {
-                this.Parameters = new Dictionary<string, string>();
-                this.Components = new List<Component>();
+                this.parameters = new Dictionary<string, string>();
+                this.components = new List<Component>();
                 XmlReader reader = XmlReader.Create(content.ReadToEnd());
                 XmlDocument document = new XmlDocument();
                 document.Load(reader);
-                this.SrcNodes = this.deserialize(document, out Components, out Parameters);
+                this.srcNodes = this.deserialize(document, out components, out parameters);
             }
         }
         public GhxVersion(string filepath)
         {
-            this.Parameters = new Dictionary<string, string>();
-            this.Components = new List<Component>();
+            this.parameters = new Dictionary<string, string>();
+            this.components = new List<Component>();
             XmlReader reader = XmlReader.Create(filepath);
             XmlDocument document = new XmlDocument();
             document.Load(reader);
-            this.SrcNodes = this.deserialize(document, out Components, out Parameters);
+            this.srcNodes = this.deserialize(document, out components, out parameters);
         }
 
         private XmlNode deserialize(XmlNode node, out List<Component> components, out Dictionary<string, string> dict)
@@ -58,7 +63,7 @@ namespace TreeHopper.Deserialize
             // Object Count
             Helper.AddValue(src.SelectNodes("chunks/chunk[@name='DefinitionObjects']/items/item[@name='ObjectCount']"), dict);
 
-            XmlNodeList src_components = node.SelectNodes("chunks/chunk[@name='DefinitionObjects']/chunks/chunk");
+            XmlNodeList src_components = src.SelectNodes("chunks/chunk[@name='DefinitionObjects']/chunks/chunk");
 
             foreach (XmlNode src_component in src_components)
             {
@@ -71,41 +76,45 @@ namespace TreeHopper.Deserialize
 
     public class Component
     {
-        private XmlNode SrcNodes;
-        private Dictionary<string, string> Parameters;
-        private List<ComponentIO> IO;
+        private XmlNode srcNodes;
+        private Dictionary<string, string> parameters;
+        private List<ComponentIO> io;
 
-        public Component(XmlNode src) 
+        public Dictionary<string, string> Parameters() { return this.parameters; }
+        public List<ComponentIO> IOs() { return this.io; }
+        public XmlNode SrcNodes() { return this.srcNodes; }
+
+        public Component(XmlNode src)
         {
-            this.SrcNodes = src;
-            this.Parameters = new Dictionary<string, string>();
-            this.IO = new List<ComponentIO>();
+            this.srcNodes = src;
+            this.parameters = new Dictionary<string, string>();
+            this.io = new List<ComponentIO>();
 
             // Adding param in parameter dictionay
             // Component Name
-            Helper.AddValue(src.SelectNodes("items/item[@name='Name']"), this.Parameters);
+            Helper.AddValue(src.SelectNodes("items/item[@name='Name']"), this.parameters).ToString();
             // InstanceGuid
-            Helper.AddValue(src.SelectNodes("chunks/chunk[@name='Container']/items/item[@name='InstanceGuid']"), this.Parameters);
+            Helper.AddValue(src.SelectNodes("chunks/chunk[@name='Container']/items/item[@name='InstanceGuid']"), this.parameters);
             // Source GUID for panel
-            Helper.AddValue(src.SelectNodes("chunks/chunk[@name='Container']/items/item[@name='Source']"), this.Parameters);
+            Helper.AddValue(src.SelectNodes("chunks/chunk[@name='Container']/items/item[@name='Source']"), this.parameters);
             // ScriptSource for C# IDE
-            Helper.AddValue(src.SelectNodes("chunks/chunk[@name='Container']/items/item[@name='ScriptSource']"), this.Parameters);
+            Helper.AddValue(src.SelectNodes("chunks/chunk[@name='Container']/items/item[@name='ScriptSource']"), this.parameters);
             // CodeInput for python IDE
-            Helper.AddValue(src.SelectNodes("chunks/chunk[@name='Container']/items/item[@name='CodeInput']"), this.Parameters);
+            Helper.AddValue(src.SelectNodes("chunks/chunk[@name='Container']/items/item[@name='CodeInput']"), this.parameters);
             // Bounds
-            Helper.AddValue(src.SelectNodes("chunks/chunk[@name='Container']/chunks/chunk[@name='Attributes']/items/item[@name='Bounds']"), this.Parameters);
+            Helper.AddValue(src.SelectNodes("chunks/chunk[@name='Container']/chunks/chunk[@name='Attributes']/items/item[@name='Bounds']"), this.parameters);
             // Pivot
-            Helper.AddValue(src.SelectNodes("chunks/chunk[@name='Container']/chunks/chunk[@name='Attributes']/items/item[@name='Pivot']"), this.Parameters);
+            Helper.AddValue(src.SelectNodes("chunks/chunk[@name='Container']/chunks/chunk[@name='Attributes']/items/item[@name='Pivot']"), this.parameters);
             // Slider Value
-            Helper.AddValue(src.SelectNodes("chunks/chunk[@name='Container']/chunks/chunk[@name='Slider']/items/item[@name='Value']"), this.Parameters);
+            Helper.AddValue(src.SelectNodes("chunks/chunk[@name='Container']/chunks/chunk[@name='Slider']/items/item[@name='Value']"), this.parameters);
 
             // input for normal gh component
             XmlNodeList param_input = src.SelectNodes("chunks/chunk[@name='Container']/chunks/chunk[@name='param_input']");
             if (param_input != null)
-            {   
+            {
                 foreach (XmlNode ioNode in param_input)
                 {
-                    this.IO.Add(new ComponentIO(ioNode));
+                    this.io.Add(new ComponentIO(ioNode));
                 }
             }
             // output for normal gh component
@@ -114,7 +123,7 @@ namespace TreeHopper.Deserialize
             {
                 foreach (XmlNode ioNode in param_output)
                 {
-                    this.IO.Add(new ComponentIO(ioNode));
+                    this.io.Add(new ComponentIO(ioNode));
                 }
             }
             // input for IDE
@@ -123,63 +132,67 @@ namespace TreeHopper.Deserialize
             {
                 foreach (XmlNode ioNode in param_output)
                 {
-                    this.IO.Add(new ComponentIO(ioNode));
+                    this.io.Add(new ComponentIO(ioNode));
                 }
             }
         }
+
     }
 
     public class ComponentIO
     {
-        private XmlNode SrcNodes;
-        private Dictionary<string, string> Parameters;
-        private XmlNode PData;
+        private XmlNode srcNodes;
+        private Dictionary<string, string> parameters;
+        private XmlNode pData;
+
+        public Dictionary<string, string> Parameters() { return this.parameters; }
+        public XmlNode PData() { return this.pData; }
+        public XmlNode SrcNodes() { return this.srcNodes; }
 
         public ComponentIO(XmlNode src)
         {
-            this.SrcNodes = src;
-            this.Parameters = new Dictionary<string, string>();
+            this.srcNodes = src;
+            this.parameters = new Dictionary<string, string>();
 
             // check if it's normal GH component
             if (src.Attributes["name"].Value == "param_input" || src.Attributes["name"].Value == "param_output")
             {
                 // IO Type
-                this.Parameters.Add("Type", src.Attributes["name"].Value);
+                this.parameters.Add("Type", src.Attributes["name"].Value);
                 // IO Name
-                Helper.AddValue(src.SelectNodes("items/item[@name='Name']"), this.Parameters);
+                Helper.AddValue(src.SelectNodes("items/item[@name='Name']"), this.parameters);
                 // Instance Guid
-                Helper.AddValue(src.SelectNodes("items/item[@name='InstanceGuid']"), this.Parameters);
+                Helper.AddValue(src.SelectNodes("items/item[@name='InstanceGuid']"), this.parameters);
                 // Source Guid
-                Helper.AddValue(src.SelectNodes("items/item[@name='Source']"), this.Parameters);
+                Helper.AddValue(src.SelectNodes("items/item[@name='Source']"), this.parameters);
                 // Source Count
-                Helper.AddValue(src.SelectNodes("items/item[@name='SourceCount']"), this.Parameters);
+                Helper.AddValue(src.SelectNodes("items/item[@name='SourceCount']"), this.parameters);
                 // Bounds
-                Helper.AddValue(src.SelectNodes("chunks/chunk[@name='Attributes']/items/item[@name='Bounds']"), this.Parameters);
+                Helper.AddValue(src.SelectNodes("chunks/chunk[@name='Attributes']/items/item[@name='Bounds']"), this.parameters);
                 // Pivot
-                Helper.AddValue(src.SelectNodes("chunks/chunk[@name='Attributes']/items/item[@name='Pivot']"), this.Parameters);
+                Helper.AddValue(src.SelectNodes("chunks/chunk[@name='Attributes']/items/item[@name='Pivot']"), this.parameters);
                 // pData
-                this.PData = src.SelectSingleNode("chunks/chunk[@name='PersistentData']");
+                this.pData = src.SelectSingleNode("chunks/chunk[@name='PersistentData']");
             }
             else
             {
                 // IO Type
-                this.Parameters.Add("Type", src.Attributes["name"].Value);
+                this.parameters.Add("Type", src.Attributes["name"].Value);
                 // IO Name
-                Helper.AddValue(src.SelectNodes("items/item[@name='Name']"), this.Parameters);
+                Helper.AddValue(src.SelectNodes("items/item[@name='Name']"), this.parameters);
                 // Instance Guid
-                Helper.AddValue(src.SelectNodes("items/item[@name='InstanceGuid']"), this.Parameters);
+                Helper.AddValue(src.SelectNodes("items/item[@name='InstanceGuid']"), this.parameters);
                 // Source Guid
-                Helper.AddValue(src.SelectNodes("items/item[@name='Source']"), this.Parameters);
+                Helper.AddValue(src.SelectNodes("items/item[@name='Source']"), this.parameters);
                 // Source Count
-                Helper.AddValue(src.SelectNodes("items/item[@name='SourceCount']"), this.Parameters);
+                Helper.AddValue(src.SelectNodes("items/item[@name='SourceCount']"), this.parameters);
                 // Bounds
-                Helper.AddValue(src.SelectNodes("chunks/chunk[@name='Attributes']/items/item[@name='Bounds']"), this.Parameters);
+                Helper.AddValue(src.SelectNodes("chunks/chunk[@name='Attributes']/items/item[@name='Bounds']"), this.parameters);
                 // Pivot
-                Helper.AddValue(src.SelectNodes("chunks/chunk[@name='Attributes']/items/item[@name='Pivot']"), this.Parameters);
+                Helper.AddValue(src.SelectNodes("chunks/chunk[@name='Attributes']/items/item[@name='Pivot']"), this.parameters);
                 // pData
-                this.PData = src.SelectSingleNode("chunks/chunk[@name='PersistentData']");
+                this.pData = src.SelectSingleNode("chunks/chunk[@name='PersistentData']");
             }
-
         }
     }
 }
