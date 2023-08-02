@@ -1,0 +1,5 @@
+C:\Users\akango\source\repos\Treehopper\Treehopper\obj\Debug\net6.0\Treehopper.csproj.AssemblyReference.cache
+C:\Users\akango\source\repos\Treehopper\Treehopper\obj\Debug\net6.0\Treehopper.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\akango\source\repos\Treehopper\Treehopper\obj\Debug\net6.0\Treehopper.AssemblyInfoInputs.cache
+C:\Users\akango\source\repos\Treehopper\Treehopper\obj\Debug\net6.0\Treehopper.AssemblyInfo.cs
+C:\Users\akango\source\repos\Treehopper\Treehopper\obj\Debug\net6.0\Treehopper.csproj.CoreCompileInputs.cache

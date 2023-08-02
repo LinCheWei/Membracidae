@@ -1,0 +1,14 @@
+﻿<Project>
+  <PropertyGroup>
+    <libgit2_propsfile>$(MSBuildThisFileFullPath)</libgit2_propsfile>
+    <libgit2_hash>e6325351ceee58cf56f58bdce61b38907805544f</libgit2_hash>
+    <libgit2_filename>git2-e632535</libgit2_filename>
+  </PropertyGroup>
+  <ItemGroup>
+    <ContentWithTargetPath Include="$(MSBuildThisFileDirectory)\..\..\runtimes\win-x86\native\*" TargetPath="lib\win32\x86\%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
+    <ContentWithTargetPath Include="$(MSBuildThisFileDirectory)\..\..\runtimes\win-x64\native\*" TargetPath="lib\win32\x64\%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
+    <ContentWithTargetPath Include="$(MSBuildThisFileDirectory)\..\..\runtimes\win-arm64\native\*" TargetPath="lib\win32\arm64\%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
+    <ContentWithTargetPath Include="$(MSBuildThisFileDirectory)\..\..\runtimes\**\*" Exclude="$(MSBuildThisFileDirectory)\..\..\runtimes\win-*\**\*" TargetPath="lib\%(RecursiveDir)..\%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
+    <ContentWithTargetPath Include="$(MSBuildThisFileDirectory)\..\..\libgit2\LibGit2Sharp.dll.config" TargetPath="LibGit2Sharp.dll.config" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+</Project>
