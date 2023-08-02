@@ -65,7 +65,6 @@
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TreeHopper.Deserialize.cs" />
-    <Compile Include="TreeHopper.Plot.cs" />
     <Compile Include="Treehopper.Utility.cs" />
     <Compile Include="TreeHopper.VersionControl.cs" />
   </ItemGroup>

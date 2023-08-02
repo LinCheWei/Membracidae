@@ -1,12 +1,10 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
-using System.Xml.Linq;
 using TreeHopper.Deserialize;
 using TreeHopper.Utility;
 
@@ -14,6 +12,7 @@ namespace TreeHopperViewer
 {
     internal class TreeHopperApp
     {
+        [STAThread]
         static void Main(string[] args)
         {
             Application.EnableVisualStyles();
@@ -25,9 +24,9 @@ namespace TreeHopperViewer
     public class MainForm : Form
     {
         private GhxVersion ghxParser;
-        private List<string> componentInfo;
-        private List<Rectangle> rectanglesToDraw;
         private List<string> names;
+        private List<Rectangle> rectanglesToDraw;
+
         public MainForm()
         {
             InitializeComponent();
@@ -42,73 +41,84 @@ namespace TreeHopperViewer
                 this.Icon = new Icon(iconFilePath); // Set the form's icon to the specified .ico file
             }
 
-            Label label = new Label()
+            // Create a MenuStrip control
+            MenuStrip menuStrip = new MenuStrip();
+
+            // Create a "File" menu
+            ToolStripMenuItem fileMenu = new ToolStripMenuItem("File");
+
+            // Create a "Open" menu item under "File"
+            ToolStripMenuItem openMenuItem = new ToolStripMenuItem("Open");
+            openMenuItem.Click += (sender, e) =>
             {
-                Text = "Enter the name of the document you want to parse:",
-                Location = new Point(10, 10),
-                AutoSize = true
+                // Handle the click event for the "Open" menu item
+                OpenFile();
             };
-            this.Controls.Add(label);
 
-            TextBox textBox = new TextBox()
+            // Add the "Open" menu item to the "File" menu
+            fileMenu.DropDownItems.Add(openMenuItem);
+
+            // Add the "File" menu to the MenuStrip control
+            menuStrip.Items.Add(fileMenu);
+
+            // Set the MenuStrip as the form's menu
+            this.Controls.Add(menuStrip);
+        }
+
+        private void OpenFile()
+        {
+            // Create an instance of OpenFileDialog
+            OpenFileDialog openFileDialog = new OpenFileDialog();
+
+            // Set initial directory and file filter (if needed)
+            openFileDialog.InitialDirectory = "C:\\Users\\akango\\Documents\\github\\Membracidae";
+            openFileDialog.Filter = "Grasshopper Files|*.ghx|All Files|*.*";
+
+            // Show the dialog and check if the user clicked OK
+            if (openFileDialog.ShowDialog() == DialogResult.OK)
             {
-                Location = new Point(10, 35),
-                Size = new Size(300, 20),
-                Text = "C:/Users/akango/Documents/github/Membracidae/test.ghx"
-            };
-            this.Controls.Add(textBox);
+                // Process the selected file
+                ProcessGrasshopperFile(openFileDialog.FileName);
+            }
+        }
 
-            Button button = new Button()
+        private void ProcessGrasshopperFile(string filePath)
+        {
+            ghxParser = new GhxVersion(filePath);
+            Dictionary<string, string> dict = ghxParser.Parameters();
+
+            rectanglesToDraw = new List<Rectangle>(); // Initialize the rectanglesToDraw list
+            names = new List<string>();
+
+            foreach (Component c in ghxParser.Components())
             {
-                Text = "Parse Document",
-                Location = new Point(10, 60)
-            };
-            button.Click += (sender, e) =>
-            {
-                string filepath = textBox.Text;
-                ghxParser = new GhxVersion(filepath);
-                Dictionary<string, string> dict = ghxParser.Parameters();
-
-                rectanglesToDraw = new List<Rectangle>(); // Initialize the rectanglesToDraw list
-                names = new List<string>();  
-
-                foreach (Component c in ghxParser.Components())
+                c.Parameters().TryGetValue("Bounds", out var value);
+                if (value != null)
                 {
-                    c.Parameters().TryGetValue("Bounds", out var value);
-                    if (value != null)
+                    string[] parameters = value.Split(';');
+                    int x = (int)(float.Parse(parameters[1]));
+                    int y = (int)(float.Parse(parameters[3]));
+                    int width = (int)(float.Parse(parameters[5]));
+                    int height = (int)(float.Parse(parameters[7]));
+
+                    // Create a new rectangle object based on the bounds
+                    Rectangle rect = new Rectangle(x, y, width, height);
+
+                    // Add the rectangle to the list
+                    rectanglesToDraw.Add(rect);
+
+                    // if bounds then find name
+                    c.Parameters().TryGetValue("Name", out var name);
+                    if (name != null)
                     {
-                        string[] parameters = value.Split(';');
-                        /*
-                        string info = string.Join(Environment.NewLine, parameters);
-                        MessageBox.Show(info, "Component Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                        */
-                        int x = (int)(float.Parse(parameters[1]));
-                        int y = (int)(float.Parse(parameters[3]));
-                        int width = (int)(float.Parse(parameters[5]));
-                        int height = (int)(float.Parse(parameters[7]));
-
-                        // Create a new rectangle object based on the bounds
-                        Rectangle rect = new Rectangle(x, y, width, height);
-
-                        // Add the rectangle to the list
-                        rectanglesToDraw.Add(rect);
-
-                        // if bounds then find name
-                        c.Parameters().TryGetValue("Name", out var name);
-                        if (name != null)
-                        {
-                            names.Add(name);
-                        }
+                        names.Add(name);
                     }
-
-                    
                 }
+            }
 
-                // Trigger the drawing of rectangles after parsing all components
-                this.Invalidate();
-                this.WindowState = FormWindowState.Maximized;
-            };
-            this.Controls.Add(button);
+            // Trigger the drawing of rectangles after parsing all components
+            this.Invalidate();
+            this.WindowState = FormWindowState.Maximized;
         }
 
         protected override void OnPaint(PaintEventArgs e)
@@ -147,7 +157,7 @@ namespace TreeHopperViewer
                 transformationMatrix.Scale(scale, scale);
 
                 // Draw all rectangles from the list
-                using (Font font = new Font("Calibri", 10*scale))
+                using (Font font = new Font("Calibri", 10 * scale))
                 using (SolidBrush fillBrush = new SolidBrush(Color.DeepPink))
                 using (Pen pen = new Pen(Color.Black, 1))
                 {
@@ -176,5 +186,3 @@ namespace TreeHopperViewer
         }
     }
 }
-
-
