@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "1edFg8wF0W30rvn8OmmKm9cLlt0LX1CHOnwOVTrVhD3lfxPDXxHkcUBB80YXpt+I8N9ws2ujH543UENhO+AO2w==",
+  "dgSpecHash": "m+CcnuFZr3CoMiJ0KMo/3TI1Um36U/LgGz98xMvQXNR41SkxVXL6D4YW3pzrWl6dz8YMvVrqaAbcj+FA4pME9w==",
   "success": true,
-  "projectFilePath": "C:\\Users\\akango\\Documents\\github\\Membracidae\\plug-in\\Treehopper\\TreehopperPlugin\\TreeHopperPlugin.csproj",
+  "projectFilePath": "C:\\Users\\akango\\Documents\\github\\Membracidae\\src\\Treehopper\\TreehopperPlugin\\TreeHopperPlugin.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\akango\\.nuget\\packages\\grasshopper\\7.13.21348.13001\\grasshopper.7.13.21348.13001.nupkg.sha512",
     "C:\\Users\\akango\\.nuget\\packages\\libgit2sharp\\0.27.2\\libgit2sharp.0.27.2.nupkg.sha512",

@@ -255,11 +255,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\akango\\Documents\\github\\Membracidae\\plug-in\\Treehopper\\TreehopperPlugin\\TreeHopperPlugin.csproj",
+      "projectUniqueName": "C:\\Users\\akango\\Documents\\github\\Membracidae\\src\\Treehopper\\TreehopperPlugin\\TreeHopperPlugin.csproj",
       "projectName": "TreeHopperPlugin",
-      "projectPath": "C:\\Users\\akango\\Documents\\github\\Membracidae\\plug-in\\Treehopper\\TreehopperPlugin\\TreeHopperPlugin.csproj",
+      "projectPath": "C:\\Users\\akango\\Documents\\github\\Membracidae\\src\\Treehopper\\TreehopperPlugin\\TreeHopperPlugin.csproj",
       "packagesPath": "C:\\Users\\akango\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\akango\\Documents\\github\\Membracidae\\plug-in\\Treehopper\\TreehopperPlugin\\obj\\",
+      "outputPath": "C:\\Users\\akango\\Documents\\github\\Membracidae\\src\\Treehopper\\TreehopperPlugin\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\akango\\AppData\\Roaming\\NuGet\\NuGet.Config",
@@ -276,8 +276,8 @@
         "net48": {
           "targetAlias": "net48",
           "projectReferences": {
-            "C:\\Users\\akango\\Documents\\github\\Membracidae\\plug-in\\Treehopper\\TreeHopperLib\\TreeHopper.csproj": {
-              "projectPath": "C:\\Users\\akango\\Documents\\github\\Membracidae\\plug-in\\Treehopper\\TreeHopperLib\\TreeHopper.csproj"
+            "C:\\Users\\akango\\Documents\\github\\Membracidae\\src\\Treehopper\\TreeHopperLib\\TreeHopper.csproj": {
+              "projectPath": "C:\\Users\\akango\\Documents\\github\\Membracidae\\src\\Treehopper\\TreeHopperLib\\TreeHopper.csproj"
             }
           }
         }
