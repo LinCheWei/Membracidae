@@ -7,7 +7,7 @@ using System.Timers;
 using System.Windows.Forms.Layout;
 using System.Windows.Forms;
 
-namespace TreeHopper
+namespace TreeHopperPlugin
 {
     public class TreeHopperInfo : GH_AssemblyInfo
     {

@@ -6,7 +6,7 @@ using System.Timers;
 using System.Windows.Forms;
 using System.Windows.Forms.Layout;
 
-namespace TreeHopper
+namespace TreeHopperPlugin
 {
     public class TreeHopperMenuItem : GH_AssemblyPriority
     {
@@ -35,7 +35,7 @@ namespace TreeHopper
 
             delayedLoadTimer.Stop();
             delayedLoadTimer.Elapsed -= DelayedLoadCallback;
-            MenuStrip mainMenuStrip = ((Form)Instances.DocumentEditor).MainMenuStrip;
+            MenuStrip mainMenuStrip = Instances.DocumentEditor.MainMenuStrip;
 
             lock (mainMenuStrip)
             {

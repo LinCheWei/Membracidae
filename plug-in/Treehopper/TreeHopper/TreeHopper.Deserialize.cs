@@ -6,7 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-//using System.Windows.Forms;
+using System.Windows.Forms;
 using System.Xml;
 using System.Xml.Linq;
 using GH_IO.Serialization;
@@ -48,7 +48,7 @@ namespace TreeHopper.Deserialize
         }
 
         private XmlNode deserialize(XmlNode node, out List<Component> components, out Dictionary<string, string> dict)
-        {         
+        {       
             components = new List<Component>();
             dict = new Dictionary<string, string>();
             XmlNode src = node.SelectSingleNode("/Archive/chunks/chunk[@name='Definition']");
@@ -195,54 +195,4 @@ namespace TreeHopper.Deserialize
             }
         }
     }
-
-    public class Bounds
-    {
-        public int X { get; set; }
-        public int Y { get; set; }
-        public int W { get; set; }
-        public int H { get; set; }
-
-        public Bounds(int x, int y, int w, int h)
-        {
-            X = x;
-            Y = y;
-            W = w;
-            H = h;
-        }
-    }
-    
-    public class Input
-    {
-        public string GUID { get; set; }
-        public string InstanceGuid { get; set; }
-        public List<int> Pivot { get; set; }
-        public bool IsConnected { get; set; }
-
-        public Input(string guid, string instanceGuid, List<int> pivot, bool isConnected)
-        {
-            GUID = guid;
-            InstanceGuid = instanceGuid;
-            Pivot = pivot;
-            IsConnected = isConnected;
-        }
-    }
-
-
-    public class Output
-    {
-        public string GUID { get; set; }
-        public string InstanceGuid { get; set; }
-        public List<int> Pivot { get; set; }
-        public bool IsConnected { get; set; }
-
-        public Output(string guid, string instanceGuid, List<int> pivot, bool isConnected)
-        {
-            GUID = guid;
-            InstanceGuid = instanceGuid;
-            Pivot = pivot;
-            IsConnected = isConnected;
-        }
-    }
-
 }
