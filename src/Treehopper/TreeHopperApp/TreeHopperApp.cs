@@ -26,6 +26,8 @@ namespace TreeHopperViewer
         private GhxVersion ghxParser;
         private List<string> names;
         private List<Rectangle> rectanglesToDraw;
+        private ToolStripMenuItem rainbowMenuItem;
+        private bool rainbowEnabled = false;
 
         public MainForm()
         {
@@ -44,26 +46,46 @@ namespace TreeHopperViewer
             // Create a MenuStrip control
             MenuStrip menuStrip = new MenuStrip();
 
-            // Create a "File" menu
+            // Create menu items
             ToolStripMenuItem fileMenu = new ToolStripMenuItem("File");
-
-            // Create a "Open" menu item under "File"
+            ToolStripMenuItem gitMenu = new ToolStripMenuItem("Git");
+            ToolStripMenuItem viewMenu = new ToolStripMenuItem("View");
+            // Create sub menu items
             ToolStripMenuItem openMenuItem = new ToolStripMenuItem("Open");
+            ToolStripMenuItem gitVersionMenuItem = new ToolStripMenuItem("Version");
+            rainbowMenuItem = new ToolStripMenuItem("Rainbow");
+            // compareMenuItem = new ToolStripMenuItem("Compare");
+
             openMenuItem.Click += (sender, e) =>
             {
-                // Handle the click event for the "Open" menu item
                 OpenFile();
             };
 
             // Add the "Open" menu item to the "File" menu
             fileMenu.DropDownItems.Add(openMenuItem);
+            gitMenu.DropDownItems.Add(gitVersionMenuItem);
+            viewMenu.DropDownItems.Add(rainbowMenuItem);
+            //viewMenu.DropDownItems.Add(compareMenuItem);
 
-            // Add the "File" menu to the MenuStrip control
+            // Add the menus to the MenuStrip control
             menuStrip.Items.Add(fileMenu);
+            menuStrip.Items.Add(gitMenu);
+            menuStrip.Items.Add(viewMenu);
 
             // Set the MenuStrip as the form's menu
             this.Controls.Add(menuStrip);
+            rainbowMenuItem.Click += rainbowMenuItem_Click;
         }
+
+        private void rainbowMenuItem_Click(object sender, EventArgs e)
+        {
+            // Toggle the rainbowEnabled flag when the "Rainbow" menu item is clicked
+            rainbowEnabled = !rainbowEnabled;
+            rainbowMenuItem.Checked = rainbowEnabled;
+            // Redraw the rectangles with the new color settings
+            this.Invalidate();
+        }
+
 
         private void OpenFile()
         {
@@ -71,7 +93,7 @@ namespace TreeHopperViewer
             OpenFileDialog openFileDialog = new OpenFileDialog();
 
             // Set initial directory and file filter (if needed)
-            openFileDialog.InitialDirectory = "C:\\Users\\akango\\Documents\\github\\Membracidae";
+            openFileDialog.InitialDirectory = "..\\Membracidae";
             openFileDialog.Filter = "Grasshopper Files|*.ghx|All Files|*.*";
 
             // Show the dialog and check if the user clicked OK
@@ -121,6 +143,51 @@ namespace TreeHopperViewer
             this.WindowState = FormWindowState.Maximized;
         }
 
+        private Color GetRectangleColor(int index, int totalRectangles)
+        {
+            if (rainbowEnabled)
+            {
+                // Calculate the hue value based on the index and total number of rectangles
+                float hue = (120f / totalRectangles) * index;
+
+                // Calculate the brightness value based on the index
+                float brightness = 0.5f + (float)index / (totalRectangles - 1) * 0.5f;
+
+                return ColorFromAhsb(255, hue, 1, brightness);
+            }
+            else
+            {
+                // Default pink color (you can change this to any other color you prefer)
+                return Color.DeepPink;
+            }
+        }
+
+        private Color ColorFromAhsb(int alpha, float hue, float saturation, float brightness)
+        {
+            // Calculate the RGB values from HSB (Hue, Saturation, Brightness)
+            int hi = Convert.ToInt32(Math.Floor(hue / 60)) % 6;
+            float f = hue / 60 - (int)(hue / 60);
+
+            brightness *= 255;
+            int v = (int)brightness;
+            int p = (int)(brightness * (1 - saturation));
+            int q = (int)(brightness * (1 - f * saturation));
+            int t = (int)(brightness * (1 - (1 - f) * saturation));
+
+            if (hi == 0)
+                return Color.FromArgb(alpha, v, t, p);
+            else if (hi == 1)
+                return Color.FromArgb(alpha, q, v, p);
+            else if (hi == 2)
+                return Color.FromArgb(alpha, p, v, t);
+            else if (hi == 3)
+                return Color.FromArgb(alpha, p, q, v);
+            else if (hi == 4)
+                return Color.FromArgb(alpha, t, p, v);
+            else
+                return Color.FromArgb(alpha, v, p, q);
+        }
+
         protected override void OnPaint(PaintEventArgs e)
         {
             base.OnPaint(e);
@@ -158,7 +225,7 @@ namespace TreeHopperViewer
 
                 // Draw all rectangles from the list
                 using (Font font = new Font("Calibri", 10 * scale))
-                using (SolidBrush fillBrush = new SolidBrush(Color.DeepPink))
+                //using (SolidBrush fillBrush = new SolidBrush(Color.DeepPink))
                 using (Pen pen = new Pen(Color.Black, 1))
                 {
                     for (int i = 0; i < rectanglesToDraw.Count; i++)
@@ -172,9 +239,15 @@ namespace TreeHopperViewer
                         path.Transform(transformationMatrix);
                         RectangleF scaledRect = path.GetBounds();
 
-                        // Draw the scaled rectangle
-                        e.Graphics.FillRectangle(fillBrush, scaledRect);
-                        e.Graphics.DrawRectangle(pen, scaledRect.Left, scaledRect.Top, scaledRect.Width, scaledRect.Height);
+                        Color customColor = GetRectangleColor(i, rectanglesToDraw.Count);
+
+                        // Draw the scaled rectangle with the custom gradient color
+                        using (SolidBrush fillBrush = new SolidBrush(customColor))
+                        {
+                            e.Graphics.FillRectangle(fillBrush, scaledRect);
+                            e.Graphics.DrawRectangle(pen, scaledRect.Left, scaledRect.Top, scaledRect.Width, scaledRect.Height);
+                        }
+
 
                         // Add rectangle text
                         int textX = (int)(scaledRect.Left + 5); // Adjust the X position of the text
