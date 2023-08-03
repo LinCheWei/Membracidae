@@ -26,16 +26,19 @@ namespace TreeHopper.Utility
 
                     string value = "";
 
-                    if (node.FirstChild.NodeType == XmlNodeType.Element)
+                    if (node.HasChildNodes)
                     {
-                        foreach (XmlNode childNode in node.ChildNodes)
+                        if (node.FirstChild.NodeType == XmlNodeType.Element)
                         {
-                            value += childNode.Name + ";" + childNode.FirstChild.Value + ";";
+                            foreach (XmlNode childNode in node.ChildNodes)
+                            {
+                                value += childNode.Name + ";" + childNode.FirstChild.Value + ";";
+                            }
                         }
-                    }
-                    else
-                    {
-                        value = node.InnerText;
+                        else
+                        {
+                            value = node.InnerText;
+                        }
                     }
 
                     dict.Add(name, value);

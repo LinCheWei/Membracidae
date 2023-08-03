@@ -1,14 +1,14 @@
 {
   "version": 2,
-  "dgSpecHash": "m+CcnuFZr3CoMiJ0KMo/3TI1Um36U/LgGz98xMvQXNR41SkxVXL6D4YW3pzrWl6dz8YMvVrqaAbcj+FA4pME9w==",
+  "dgSpecHash": "XEq22aWT7VZ1HmY5/fO3Va3R6jbYvVrgxNacZ7OAt8X4mllOvvdPpFsPMfij2eWUDzYhYqwQFxZjEAARXgStwg==",
   "success": true,
-  "projectFilePath": "C:\\Users\\akango\\Documents\\github\\Membracidae\\src\\Treehopper\\TreehopperPlugin\\TreeHopperPlugin.csproj",
+  "projectFilePath": "C:\\Users\\chewei\\Documents\\GitHub\\Membracidae\\src\\Treehopper\\TreehopperPlugin\\TreeHopperPlugin.csproj",
   "expectedPackageFiles": [
-    "C:\\Users\\akango\\.nuget\\packages\\grasshopper\\7.13.21348.13001\\grasshopper.7.13.21348.13001.nupkg.sha512",
-    "C:\\Users\\akango\\.nuget\\packages\\libgit2sharp\\0.27.2\\libgit2sharp.0.27.2.nupkg.sha512",
-    "C:\\Users\\akango\\.nuget\\packages\\libgit2sharp.nativebinaries\\2.0.320\\libgit2sharp.nativebinaries.2.0.320.nupkg.sha512",
-    "C:\\Users\\akango\\.nuget\\packages\\rhinocommon\\7.13.21348.13001\\rhinocommon.7.13.21348.13001.nupkg.sha512",
-    "C:\\Users\\akango\\.nuget\\packages\\xmldiffpatch\\1.0.8.28\\xmldiffpatch.1.0.8.28.nupkg.sha512"
+    "C:\\Users\\chewei\\.nuget\\packages\\grasshopper\\7.13.21348.13001\\grasshopper.7.13.21348.13001.nupkg.sha512",
+    "C:\\Users\\chewei\\.nuget\\packages\\libgit2sharp\\0.27.2\\libgit2sharp.0.27.2.nupkg.sha512",
+    "C:\\Users\\chewei\\.nuget\\packages\\libgit2sharp.nativebinaries\\2.0.320\\libgit2sharp.nativebinaries.2.0.320.nupkg.sha512",
+    "C:\\Users\\chewei\\.nuget\\packages\\rhinocommon\\7.13.21348.13001\\rhinocommon.7.13.21348.13001.nupkg.sha512",
+    "C:\\Users\\chewei\\.nuget\\packages\\xmldiffpatch\\1.0.8.28\\xmldiffpatch.1.0.8.28.nupkg.sha512"
   ],
   "logs": []
 }
