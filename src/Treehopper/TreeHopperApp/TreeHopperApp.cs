@@ -39,7 +39,7 @@ namespace TreeHopperViewer
         Matrix transformationMatrix;
         //zoomies
         private float zoomLevel = 1.0f; // Initial zoom level (1.0 means 100%)
-
+        private PointF mousePosition = PointF.Empty;
 
         public MainForm()
         {
@@ -87,6 +87,7 @@ namespace TreeHopperViewer
             // Set the MenuStrip as the form's menu
             this.Controls.Add(menuStrip);
             rainbowMenuItem.Click += rainbowMenuItem_Click;
+            mousePosition = new PointF(this.ClientSize.Width / 2, this.ClientSize.Height / 2);
         }
 
         private void rainbowMenuItem_Click(object sender, EventArgs e)
@@ -224,8 +225,11 @@ namespace TreeHopperViewer
         float maxY = rectanglesToDraw.Max(rect => rect.Bottom);
         return maxY - minY;
     }
-        private Matrix CalculateTransformValues(float zoomLevel)
+        private void CalculateTransformValues()
         {
+            if (rectanglesToDraw == null || rectanglesToDraw.Count == 0)
+                return;
+
             float minX = rectanglesToDraw.Min(rect => rect.Left);
             float minY = rectanglesToDraw.Min(rect => rect.Top);
             float maxX = rectanglesToDraw.Max(rect => rect.Right);
@@ -235,37 +239,40 @@ namespace TreeHopperViewer
             float boundingBoxWidth = maxX - minX;
             float boundingBoxHeight = maxY - minY;
 
-            // Calculate the size of the form's client area
-            float clientAreaWidth = this.ClientSize.Width;
-            float clientAreaHeight = this.ClientSize.Height;
+            // Calculate the new scaling factors based on the zoom level
+            float scaleX = zoomLevel;
+            float scaleY = zoomLevel;
 
-            // Calculate the scaling factor to fit the bounding box to the client area with the given zoom level
-            scaleX = (float)clientAreaWidth / (boundingBoxWidth * zoomLevel);
-            scaleY = (float)clientAreaHeight / (boundingBoxHeight * zoomLevel);
+            // Calculate the translation needed to center the scaled bounding box on the mouse position
+            float translateX = mousePosition.X - scaleX * mousePosition.X;
+            float translateY = mousePosition.Y - scaleY * mousePosition.Y;
 
-            // Calculate the translation needed to center the scaled bounding box on the form
-            translateX = (int)((clientAreaWidth - boundingBoxWidth * scaleX * zoomLevel) / 2);
-            translateY = (int)((clientAreaHeight - boundingBoxHeight * scaleY * zoomLevel) / 2);
-
-            // Create and return the transformation matrix with the given zoom level applied
-            Matrix transformationMatrix = new Matrix();
-            transformationMatrix.Scale(scaleX * zoomLevel, scaleY * zoomLevel);
+            // Create a transformation matrix
+            transformationMatrix = new Matrix();
             transformationMatrix.Translate(translateX, translateY);
+            transformationMatrix.Scale(scaleX, scaleY);
 
-            return transformationMatrix;
+            // Update the class-level variables
+            this.scaleX = scaleX;
+            this.scaleY = scaleY;
+            this.translateX = translateX;
+            this.translateY = translateY;
         }
+
 
 
         protected override void OnPaint(PaintEventArgs e)
         {
             base.OnPaint(e);
+            CalculateTransformValues();
             if (rectanglesToDraw != null && rectanglesToDraw.Count > 0)
             {
-                CalculateTransformValues(zoomLevel);
                 // Create a transformation matrix
-                transformationMatrix = new Matrix();
-                transformationMatrix.Scale(scaleX, scaleY);
-                transformationMatrix.Translate(translateX, translateY);
+                // Apply the stored transformation matrix to the mouse position
+                PointF[] mousePos = { mousePosition };
+                transformationMatrix.Invert();
+                transformationMatrix.TransformPoints(mousePos);
+                transformationMatrix.Invert();
                 PointF[] points = {};
                 if (pivots.Count > 0)
                 {
@@ -273,7 +280,7 @@ namespace TreeHopperViewer
                     transformationMatrix.TransformPoints(points);
                 }
                 // Draw all rectangles from the list
-                using (Font font = new Font("Calibri", 10*1/zoomLevel))
+                using (Font font = new Font("Calibri", 10*scaleX))
                 //using (SolidBrush fillBrush = new SolidBrush(Color.DeepPink))
                 using (Pen pen = new Pen(Color.Black, 1))
                 {
@@ -354,19 +361,21 @@ namespace TreeHopperViewer
         {
             base.OnMouseWheel(e);
 
-            // Check if the Ctrl key is pressed to enable zooming
-            if (ModifierKeys.HasFlag(Keys.Control))
-            {
-                // Increment or decrement the zoom level based on the mouse wheel delta
-                const float zoomStep = 0.1f;
-                zoomLevel += e.Delta > 0 ? zoomStep : -zoomStep;
+            // Recalculate the transformations
+            CalculateTransformValues();
 
-                // Limit the zoom level to a reasonable range (e.g., 10% to 300%)
-                zoomLevel = Math.Max(0.1f, Math.Min(3.0f, zoomLevel));
+            // Determine the zoom direction (positive or negative)
+            int direction = Math.Sign(e.Delta);
 
-                // Redraw the rectangles with the new zoom level
-                this.Invalidate();
-            }
+            // Adjust the zoom level based on the direction and a fixed factor (you can adjust this factor as needed)
+            float zoomFactor = 1.2f;
+            zoomLevel *= direction == 1 ? zoomFactor : 1.0f / zoomFactor;
+
+            // Update the mouse position
+            mousePosition = e.Location;
+
+            // Redraw the form
+            this.Invalidate();
         }
 
     }

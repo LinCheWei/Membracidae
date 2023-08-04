@@ -179,10 +179,10 @@ def draw_diagram(components):
     plt.show()
 
 # Get the current working directory
-current_dir = os.path.dirname(os.path.realpath(__file__))
+current_dir = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
 
 # Specify the XML file name
-file_name = 'thz.ghx'
+file_name = 'test.ghx'
 
 # Create the file path by joining the current directory and the file name
 xml_file = os.path.join(current_dir, file_name)
