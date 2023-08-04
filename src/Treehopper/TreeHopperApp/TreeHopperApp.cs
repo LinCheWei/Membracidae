@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Deployment.Application;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.IO;
@@ -9,6 +10,7 @@ using System.Linq.Expressions;
 using System.Windows.Forms;
 using TreeHopper.Deserialize;
 using TreeHopper.Utility;
+using TreeHopperApp.Utils;
 
 namespace TreeHopperViewer
 {
@@ -26,7 +28,9 @@ namespace TreeHopperViewer
     public class MainForm : Form
     {
         private GhxDocument ghxParser;
+        //Variables to plot
         private List<string> names;
+        private List<Guid> iGuids;
         private List<PointF> pivots;
         private List<RectangleF> rectanglesToDraw;
         private ToolStripMenuItem rainbowMenuItem;
@@ -122,6 +126,7 @@ namespace TreeHopperViewer
             ghxParser = new GhxDocument(filePath);
 
             rectanglesToDraw = new List<RectangleF>(); // Initialize the rectanglesToDraw list
+            iGuids = new List<Guid>();
             names = new List<string>();
             pivots = new List<PointF>();
             foreach (Component c in ghxParser.Components)
@@ -133,10 +138,15 @@ namespace TreeHopperViewer
                     rectanglesToDraw.Add(value);
 
                     // if bounds then find name
-                    var name = c.Parameter("Name");
+                    Guid instanceGuid = c.InstanceGuid;
+                    string name = c.Parameter("Name");
                     if (name != null)
                     {
                         names.Add(name);
+                    }
+                    if (instanceGuid != null)
+                    {
+                        iGuids.Add(instanceGuid);
                     }
                     //pivots.Add(c.Parameter("Pivot"));
                     var IOs = c.IO;
@@ -150,118 +160,43 @@ namespace TreeHopperViewer
             this.Invalidate();
             this.WindowState = FormWindowState.Maximized;
         }
-
-        private Color GetRectangleColor(int index, int totalRectangles)
-        {
-            if (rainbowEnabled)
-            {
-                // Calculate the hue value based on the index and total number of rectangles
-                float hue = (120f / totalRectangles) * index;
-
-                // Calculate the brightness value based on the index
-                float brightness = 0.5f + (float)index / (totalRectangles - 1) * 0.5f;
-
-                return ColorFromAhsb(255, hue, 1, brightness);
-            }
-            else
-            {
-                // Default pink color (you can change this to any other color you prefer)
-                return Color.DeepPink;
-            }
-        }
-
-        private Color ColorFromAhsb(int alpha, float hue, float saturation, float brightness)
-        {
-            // Calculate the RGB values from HSB (Hue, Saturation, Brightness)
-            int hi = Convert.ToInt32(Math.Floor(hue / 60)) % 6;
-            float f = hue / 60 - (int)(hue / 60);
-
-            brightness *= 255;
-            int v = (int)brightness;
-            int p = (int)(brightness * (1 - saturation));
-            int q = (int)(brightness * (1 - f * saturation));
-            int t = (int)(brightness * (1 - (1 - f) * saturation));
-
-            if (hi == 0)
-                return Color.FromArgb(alpha, v, t, p);
-            else if (hi == 1)
-                return Color.FromArgb(alpha, q, v, p);
-            else if (hi == 2)
-                return Color.FromArgb(alpha, p, v, t);
-            else if (hi == 3)
-                return Color.FromArgb(alpha, p, q, v);
-            else if (hi == 4)
-                return Color.FromArgb(alpha, t, p, v);
-            else
-                return Color.FromArgb(alpha, v, p, q);
-        }
     
      //Calculate transformations
-
-    private float CalculateScaleX()
+    private void CalculateTransformValues()
     {
-        float boundingBoxWidth = CalculateBoundingBoxWidth();
-        float clientAreaWidth = this.ClientSize.Width;
-        return (float)clientAreaWidth / boundingBoxWidth;
-    }
+        if (rectanglesToDraw == null || rectanglesToDraw.Count == 0)
+            return;
 
-    private float CalculateScaleY()
-    {
-        float boundingBoxHeight = CalculateBoundingBoxHeight();
-        float clientAreaHeight = this.ClientSize.Height;
-        return (float)clientAreaHeight / boundingBoxHeight;
-    }
-
-    private float CalculateBoundingBoxWidth()
-    {
         float minX = rectanglesToDraw.Min(rect => rect.Left);
-        float maxX = rectanglesToDraw.Max(rect => rect.Right);
-        return maxX - minX;
-    }
-
-    private float CalculateBoundingBoxHeight()
-    {
         float minY = rectanglesToDraw.Min(rect => rect.Top);
+        float maxX = rectanglesToDraw.Max(rect => rect.Right);
         float maxY = rectanglesToDraw.Max(rect => rect.Bottom);
-        return maxY - minY;
+
+        // Calculate the size of the bounding box
+        float boundingBoxWidth = maxX - minX;
+        float boundingBoxHeight = maxY - minY;
+
+        // Calculate the new scaling factors based on the zoom level
+        float scaleX = zoomLevel;
+        float scaleY = zoomLevel;
+
+        // Calculate the translation needed to center the scaled bounding box on the mouse position
+        float translateX = mousePosition.X - scaleX * mousePosition.X;
+        float translateY = mousePosition.Y - scaleY * mousePosition.Y;
+
+        // Create a transformation matrix
+        transformationMatrix = new Matrix();
+        transformationMatrix.Translate(translateX, translateY);
+        transformationMatrix.Scale(scaleX, scaleY);
+
+        // Update the class-level variables
+        this.scaleX = scaleX;
+        this.scaleY = scaleY;
+        this.translateX = translateX;
+        this.translateY = translateY;
     }
-        private void CalculateTransformValues()
-        {
-            if (rectanglesToDraw == null || rectanglesToDraw.Count == 0)
-                return;
 
-            float minX = rectanglesToDraw.Min(rect => rect.Left);
-            float minY = rectanglesToDraw.Min(rect => rect.Top);
-            float maxX = rectanglesToDraw.Max(rect => rect.Right);
-            float maxY = rectanglesToDraw.Max(rect => rect.Bottom);
-
-            // Calculate the size of the bounding box
-            float boundingBoxWidth = maxX - minX;
-            float boundingBoxHeight = maxY - minY;
-
-            // Calculate the new scaling factors based on the zoom level
-            float scaleX = zoomLevel;
-            float scaleY = zoomLevel;
-
-            // Calculate the translation needed to center the scaled bounding box on the mouse position
-            float translateX = mousePosition.X - scaleX * mousePosition.X;
-            float translateY = mousePosition.Y - scaleY * mousePosition.Y;
-
-            // Create a transformation matrix
-            transformationMatrix = new Matrix();
-            transformationMatrix.Translate(translateX, translateY);
-            transformationMatrix.Scale(scaleX, scaleY);
-
-            // Update the class-level variables
-            this.scaleX = scaleX;
-            this.scaleY = scaleY;
-            this.translateX = translateX;
-            this.translateY = translateY;
-        }
-
-
-
-        protected override void OnPaint(PaintEventArgs e)
+    protected override void OnPaint(PaintEventArgs e)
         {
             base.OnPaint(e);
             CalculateTransformValues();
@@ -294,7 +229,7 @@ namespace TreeHopperViewer
                         path.AddRectangle(rect);
                         path.Transform(transformationMatrix);
                         RectangleF scaledRect = path.GetBounds();
-                        Color customColor = GetRectangleColor(i, rectanglesToDraw.Count);
+                        Color customColor = AppUtils.GetRectangleColor(i, rectanglesToDraw.Count, rainbowEnabled);
 
                         // Draw the scaled rectangle with the custom gradient color
                         using (SolidBrush fillBrush = new SolidBrush(customColor))
@@ -319,7 +254,7 @@ namespace TreeHopperViewer
                 }
             }
         }
-        protected override void OnMouseClick(MouseEventArgs e)
+    protected override void OnMouseClick(MouseEventArgs e)
         {
             base.OnMouseClick(e);
             //CalculateTransformValues();
@@ -336,10 +271,10 @@ namespace TreeHopperViewer
                 if (rect.Contains(mouseClick[0]))
                 {
                     // Perform action when the rectangle is clicked
-                    string name = names[i];
+                    Guid instanceGuid = iGuids[i];
                     PointF pivot = pivots[i];
 
-                    Component component = ghxParser.Components.FirstOrDefault(c => c.Parameter("Name") == name);
+                    Component component = ghxParser.Components.FirstOrDefault(c => c.InstanceGuid == instanceGuid);
                     //Save component GUID
                     //Save component Input Param or param_input if any
                     //Output if any
@@ -350,14 +285,18 @@ namespace TreeHopperViewer
                     //Don't really know what else
 
                     // For example, display a message box showing the name and pivot point
-                    Guid instanceGuid = component.InstanceGuid;
-                    string message = $"Component GUID = {instanceGuid}\n" + $"ComponentName = {name}";
+                    string name = component.Parameter("Name");
+                    string code;
+                    if (component.Parameter("CodeInput") != null) code = component.Parameter("CodeInput");
+                    else if (component.Parameter("ScriptSource") != null) code = component.Parameter("ScriptSource");
+                    else code = null;
+                    string message = $"Component Name = {name}\n" + $"Component GUID = {instanceGuid}\n " +
+                        $"Value = {code}";
                     MessageBox.Show(message, "Rectangle Clicked");
                 }
             }
         }
-
-        protected override void OnMouseWheel(MouseEventArgs e)
+    protected override void OnMouseWheel(MouseEventArgs e)
         {
             base.OnMouseWheel(e);
 
