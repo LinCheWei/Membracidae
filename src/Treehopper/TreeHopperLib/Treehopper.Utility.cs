@@ -80,11 +80,11 @@ namespace TreeHopper.Utility
             {
                 XmlNode node = nodes[0];
                 string name = node.Attributes["name"].Value;
-                int x = int.Parse(node.SelectSingleNode("X").FirstChild.Value);
-                int y = int.Parse(node.SelectSingleNode("Y").FirstChild.Value);
-                int width = int.Parse(node.SelectSingleNode("W").FirstChild.Value);
-                int height = int.Parse(node.SelectSingleNode("H").FirstChild.Value);
-                Rectangle rect = new Rectangle(x, y, width, height);
+                float x = float.Parse(node.SelectSingleNode("X").FirstChild.Value);
+                float y = float.Parse(node.SelectSingleNode("Y").FirstChild.Value);
+                float width = float.Parse(node.SelectSingleNode("W").FirstChild.Value);
+                float height = float.Parse(node.SelectSingleNode("H").FirstChild.Value);
+                RectangleF rect = new RectangleF(x, y, width, height);
                 dict.Add(name, rect);
                 return true;
             }

@@ -139,7 +139,7 @@ namespace TreeHopper.Deserialize
             XmlNodeList parameter_data = src.SelectNodes("chunks/chunk[@name='Container']/chunks/chunk[@name='ParameterData']/chunks/chunk");
             if (parameter_data != null)
             {
-                foreach (XmlNode ioNode in param_output)
+                foreach (XmlNode ioNode in parameter_data)
                 {
                     this.io.Add(new ComponentIO(ioNode));
                 }

@@ -1,9 +1,11 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.IO;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Windows.Forms;
 using TreeHopper.Deserialize;
 using TreeHopper.Utility;
@@ -25,9 +27,19 @@ namespace TreeHopperViewer
     {
         private GhxDocument ghxParser;
         private List<string> names;
-        private List<Rectangle> rectanglesToDraw;
+        private List<PointF> pivots;
+        private List<RectangleF> rectanglesToDraw;
         private ToolStripMenuItem rainbowMenuItem;
         private bool rainbowEnabled = false;
+        //Transforms
+        private float scaleX;
+        private float scaleY;
+        private float translateX;
+        private float translateY;
+        Matrix transformationMatrix;
+        //zoomies
+        private float zoomLevel = 1.0f; // Initial zoom level (1.0 means 100%)
+
 
         public MainForm()
         {
@@ -108,9 +120,9 @@ namespace TreeHopperViewer
         {
             ghxParser = new GhxDocument(filePath);
 
-            rectanglesToDraw = new List<Rectangle>(); // Initialize the rectanglesToDraw list
+            rectanglesToDraw = new List<RectangleF>(); // Initialize the rectanglesToDraw list
             names = new List<string>();
-
+            pivots = new List<PointF>();
             foreach (Component c in ghxParser.Components)
             {
                 var value = c.Parameter("Bounds");
@@ -125,9 +137,14 @@ namespace TreeHopperViewer
                     {
                         names.Add(name);
                     }
+                    //pivots.Add(c.Parameter("Pivot"));
+                    var IOs = c.IO;
+                    foreach (var o in IOs)
+                    {
+                        pivots.Add(o.Parameter("Pivot"));
+                    }
                 }
             }
-
             // Trigger the drawing of rectangles after parsing all components
             this.Invalidate();
             this.WindowState = FormWindowState.Maximized;
@@ -177,65 +194,106 @@ namespace TreeHopperViewer
             else
                 return Color.FromArgb(alpha, v, p, q);
         }
+    
+     //Calculate transformations
+
+    private float CalculateScaleX()
+    {
+        float boundingBoxWidth = CalculateBoundingBoxWidth();
+        float clientAreaWidth = this.ClientSize.Width;
+        return (float)clientAreaWidth / boundingBoxWidth;
+    }
+
+    private float CalculateScaleY()
+    {
+        float boundingBoxHeight = CalculateBoundingBoxHeight();
+        float clientAreaHeight = this.ClientSize.Height;
+        return (float)clientAreaHeight / boundingBoxHeight;
+    }
+
+    private float CalculateBoundingBoxWidth()
+    {
+        float minX = rectanglesToDraw.Min(rect => rect.Left);
+        float maxX = rectanglesToDraw.Max(rect => rect.Right);
+        return maxX - minX;
+    }
+
+    private float CalculateBoundingBoxHeight()
+    {
+        float minY = rectanglesToDraw.Min(rect => rect.Top);
+        float maxY = rectanglesToDraw.Max(rect => rect.Bottom);
+        return maxY - minY;
+    }
+        private Matrix CalculateTransformValues(float zoomLevel)
+        {
+            float minX = rectanglesToDraw.Min(rect => rect.Left);
+            float minY = rectanglesToDraw.Min(rect => rect.Top);
+            float maxX = rectanglesToDraw.Max(rect => rect.Right);
+            float maxY = rectanglesToDraw.Max(rect => rect.Bottom);
+
+            // Calculate the size of the bounding box
+            float boundingBoxWidth = maxX - minX;
+            float boundingBoxHeight = maxY - minY;
+
+            // Calculate the size of the form's client area
+            float clientAreaWidth = this.ClientSize.Width;
+            float clientAreaHeight = this.ClientSize.Height;
+
+            // Calculate the scaling factor to fit the bounding box to the client area with the given zoom level
+            scaleX = (float)clientAreaWidth / (boundingBoxWidth * zoomLevel);
+            scaleY = (float)clientAreaHeight / (boundingBoxHeight * zoomLevel);
+
+            // Calculate the translation needed to center the scaled bounding box on the form
+            translateX = (int)((clientAreaWidth - boundingBoxWidth * scaleX * zoomLevel) / 2);
+            translateY = (int)((clientAreaHeight - boundingBoxHeight * scaleY * zoomLevel) / 2);
+
+            // Create and return the transformation matrix with the given zoom level applied
+            Matrix transformationMatrix = new Matrix();
+            transformationMatrix.Scale(scaleX * zoomLevel, scaleY * zoomLevel);
+            transformationMatrix.Translate(translateX, translateY);
+
+            return transformationMatrix;
+        }
+
 
         protected override void OnPaint(PaintEventArgs e)
         {
             base.OnPaint(e);
-
             if (rectanglesToDraw != null && rectanglesToDraw.Count > 0)
             {
-                // Find the bounding box that encloses all rectangles
-                int minX = rectanglesToDraw.Min(rect => rect.Left);
-                int minY = rectanglesToDraw.Min(rect => rect.Top);
-                int maxX = rectanglesToDraw.Max(rect => rect.Right);
-                int maxY = rectanglesToDraw.Max(rect => rect.Bottom);
-
-                float margin = -0.25f;
-                // Calculate the size of the bounding box
-                int boundingBoxWidth = maxX - minX;
-                int boundingBoxHeight = maxY - minY;
-
-                // Calculate the size of the form's client area
-                int clientAreaWidth = this.ClientSize.Width;
-                int clientAreaHeight = this.ClientSize.Height;
-
-                // Calculate the scaling factor to fit the bounding box to the client area
-                float scaleX = (float)clientAreaWidth / boundingBoxWidth;
-                float scaleY = (float)clientAreaHeight / boundingBoxHeight;
-                float scale = Math.Min(scaleX, scaleY) + margin;
-
-                // Calculate the translation needed to center the scaled bounding box on the form
-                int translateX = (int)((clientAreaWidth - boundingBoxWidth * scale) / 2);
-                int translateY = (int)((clientAreaHeight - boundingBoxHeight * scale) / 2);
-
+                CalculateTransformValues(zoomLevel);
                 // Create a transformation matrix
-                Matrix transformationMatrix = new Matrix();
-                transformationMatrix.Translate(translateX - minX * scale, translateY - minY * scale);
-                transformationMatrix.Scale(scale, scale);
-
+                transformationMatrix = new Matrix();
+                transformationMatrix.Scale(scaleX, scaleY);
+                transformationMatrix.Translate(translateX, translateY);
+                PointF[] points = {};
+                if (pivots.Count > 0)
+                {
+                    points = pivots.ToArray();
+                    transformationMatrix.TransformPoints(points);
+                }
                 // Draw all rectangles from the list
-                using (Font font = new Font("Calibri", 10 * scale))
+                using (Font font = new Font("Calibri", 10*1/zoomLevel))
                 //using (SolidBrush fillBrush = new SolidBrush(Color.DeepPink))
                 using (Pen pen = new Pen(Color.Black, 1))
                 {
                     for (int i = 0; i < rectanglesToDraw.Count; i++)
                     {
-                        Rectangle rect = rectanglesToDraw[i];
+                        RectangleF rect = rectanglesToDraw[i];
                         string name = names[i];
-
+        
                         // Apply the transformation to the rectangle
                         GraphicsPath path = new GraphicsPath();
                         path.AddRectangle(rect);
                         path.Transform(transformationMatrix);
                         RectangleF scaledRect = path.GetBounds();
-
                         Color customColor = GetRectangleColor(i, rectanglesToDraw.Count);
 
                         // Draw the scaled rectangle with the custom gradient color
                         using (SolidBrush fillBrush = new SolidBrush(customColor))
                         {
                             e.Graphics.FillRectangle(fillBrush, scaledRect);
-                            e.Graphics.DrawRectangle(pen, scaledRect.Left, scaledRect.Top, scaledRect.Width, scaledRect.Height);
+                            //e.Graphics.DrawRectangle(pen, scaledRect.Left, scaledRect.Top, scaledRect.Width, scaledRect.Height);
                         }
 
 
@@ -244,8 +302,72 @@ namespace TreeHopperViewer
                         int textY = (int)(scaledRect.Top + 5);  // Adjust the Y position of the text
                         e.Graphics.DrawString(name, font, Brushes.Black, textX, textY);
                     }
+                    if (points.Length > 0)
+                    {
+                        foreach (PointF pivot in points)
+                        {
+                            e.Graphics.DrawEllipse(pen, pivot.X, pivot.Y, 2, 2);
+                        }
+                    }
                 }
             }
         }
+        protected override void OnMouseClick(MouseEventArgs e)
+        {
+            base.OnMouseClick(e);
+            //CalculateTransformValues();
+            // Apply the stored transformation matrix to the mouse click coordinates
+            PointF[] mouseClick = { new PointF(e.X, e.Y) };
+            transformationMatrix.Invert();
+            transformationMatrix.TransformPoints(mouseClick);
+            transformationMatrix.Invert();
+
+            // Check if the mouse click occurred within any of the rectangles
+            for (int i = 0; i < rectanglesToDraw.Count; i++)
+            {
+                RectangleF rect = rectanglesToDraw[i];
+                if (rect.Contains(mouseClick[0]))
+                {
+                    // Perform action when the rectangle is clicked
+                    string name = names[i];
+                    PointF pivot = pivots[i];
+
+                    Component component = ghxParser.Components.FirstOrDefault(c => c.Parameter("Name") == name);
+                    //Save component GUID
+                    //Save component Input Param or param_input if any
+                    //Output if any
+                    //All GUID
+                    //Save Script if any
+                    //Otherwise save source if any
+                    //if no pivot create in pivot and out pivot
+                    //Don't really know what else
+
+                    // For example, display a message box showing the name and pivot point
+                    Guid instanceGuid = component.InstanceGuid;
+                    string message = $"Component GUID = {instanceGuid}\n" + $"ComponentName = {name}";
+                    MessageBox.Show(message, "Rectangle Clicked");
+                }
+            }
+        }
+
+        protected override void OnMouseWheel(MouseEventArgs e)
+        {
+            base.OnMouseWheel(e);
+
+            // Check if the Ctrl key is pressed to enable zooming
+            if (ModifierKeys.HasFlag(Keys.Control))
+            {
+                // Increment or decrement the zoom level based on the mouse wheel delta
+                const float zoomStep = 0.1f;
+                zoomLevel += e.Delta > 0 ? zoomStep : -zoomStep;
+
+                // Limit the zoom level to a reasonable range (e.g., 10% to 300%)
+                zoomLevel = Math.Max(0.1f, Math.Min(3.0f, zoomLevel));
+
+                // Redraw the rectangles with the new zoom level
+                this.Invalidate();
+            }
+        }
+
     }
 }
