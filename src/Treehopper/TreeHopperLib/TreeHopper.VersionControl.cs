@@ -68,11 +68,11 @@ namespace TreeHopper.VersionControl
             return sha;
         }
 
-        public GhxVersion getGhxVersion(Commit commit)
+        public GhxDocument getGhxVersion(Commit commit)
         {
             /// Search for the Blob contains the ghx file 
             var tarBlob = this.Repo.Lookup<Blob>(commit.Tree.Sha + ":" + this.FileName);
-            return new GhxVersion(tarBlob.GetContentStream());
+            return new GhxDocument(tarBlob.GetContentStream());
         }
     }
 

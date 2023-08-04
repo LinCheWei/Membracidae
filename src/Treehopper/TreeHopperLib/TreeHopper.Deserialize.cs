@@ -1,112 +1,121 @@
-﻿using LibGit2Sharp;
-using Rhino.UI;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
-//using System.Windows.Forms;
 using System.Xml;
-using System.Xml.Linq;
-using GH_IO.Serialization;
 using TreeHopper.Utility;
-using System.Security.Cryptography;
+using System.Drawing;
+using System.Drawing.Printing;
 
 namespace TreeHopper.Deserialize
 {
-    public class GhxVersion
+    public class GhxDocument
     {
         private XmlNode srcNodes;
         private List<Component> components;
-        private Dictionary<string, string> parameters;
+        private Dictionary<string, object> parameters;
+        private Guid guid;
 
-        public Dictionary<string, string> Parameters() { return parameters; }
-        public List<Component> Components() { return components; }
-        public XmlNode SrcNodes() { return srcNodes; } 
+        public List<Component> Components { get { return components; } }
+        public XmlNode SrcNodes { get { return srcNodes; } } 
+        public Guid Guid { get { return guid; } }
+        public Dictionary<string, object> Parameters { get { return parameters; } }
 
-        public GhxVersion(Stream stream) 
+        public GhxDocument(Stream stream) 
         {
             using (var content = new StreamReader(stream, Encoding.UTF8))
             {
-                this.parameters = new Dictionary<string, string>();
+                this.parameters = new Dictionary<string, object>();
                 this.components = new List<Component>();
+                this.guid = Guid.Empty;
                 XmlReader reader = XmlReader.Create(content.ReadToEnd());
                 XmlDocument document = new XmlDocument();
                 document.Load(reader);
-                this.srcNodes = this.deserialize(document, out components, out parameters);
+                this.srcNodes = this.deserialize(document);
             }
         }
-        public GhxVersion(string filepath)
+        public GhxDocument(string filepath)
         {
-            this.parameters = new Dictionary<string, string>();
+            this.parameters = new Dictionary<string, object>();
             this.components = new List<Component>();
+            this.guid = Guid.Empty;
             XmlReader reader = XmlReader.Create(filepath);
             XmlDocument document = new XmlDocument();
             document.Load(reader);
-            this.srcNodes = this.deserialize(document, out components, out parameters);
+            this.srcNodes = this.deserialize(document);
         }
 
-        private XmlNode deserialize(XmlNode node, out List<Component> components, out Dictionary<string, string> dict)
+        private XmlNode deserialize(XmlNode node)
         {         
-            components = new List<Component>();
-            dict = new Dictionary<string, string>();
             XmlNode src = node.SelectSingleNode("/Archive/chunks/chunk[@name='Definition']");
 
             // Adding param in parameter dictionay
             // Plugin version
-            Helper.AddValue(src.SelectNodes("items/item[@name='plugin_version']"), dict);
+            //Helper.AddValue(src.SelectNodes("items/item[@name='plugin_version']"), dict);
             // Document Id  
-            Helper.AddValue(src.SelectNodes("chunks/chunk[@name='DocumentHeader']/items/item[@name='DocumentID']"), dict);
+            Helper.GetGuid(src.SelectNodes("chunks/chunk[@name='DocumentHeader']/items/item[@name='DocumentID']"), out this.guid);
             // Doc Name
-            Helper.AddValue(src.SelectNodes("chunks/chunk[@name='DefinitionProperties']/items/item[@name='Name']"), dict);
+            Helper.AddParam(src.SelectNodes("chunks/chunk[@name='DefinitionProperties']/items/item[@name='Name']"), this.parameters, typeof(string));
             // Object Count
-            Helper.AddValue(src.SelectNodes("chunks/chunk[@name='DefinitionObjects']/items/item[@name='ObjectCount']"), dict);
+            Helper.AddParam(src.SelectNodes("chunks/chunk[@name='DefinitionObjects']/items/item[@name='ObjectCount']"), this.parameters, typeof(int));
 
             XmlNodeList src_components = src.SelectNodes("chunks/chunk[@name='DefinitionObjects']/chunks/chunk");
 
-            foreach (XmlNode src_component in src_components)
+            for (int i = 0; i < src_components.Count; i++)
             {
-                components.Add(new Component(src_component));
+                this.components.Add(new Component(src_components[i], i));
             }
 
             return src;
+        }
+
+        public dynamic Parameter(string key)
+        {
+            dynamic obj = null;
+            this.parameters.TryGetValue(key, out obj);
+            return obj;
         }
     }
 
     public class Component
     {
+        private int index;
         private XmlNode srcNodes;
-        private Dictionary<string, string> parameters;
+        private Guid instanceGuid;
+        private Dictionary<string, object> parameters;
         private List<ComponentIO> io;
 
-        public Dictionary<string, string> Parameters() { return this.parameters; }
-        public List<ComponentIO> IOs() { return this.io; }
-        public XmlNode SrcNodes() { return this.srcNodes; }
+        public List<ComponentIO> IO { get { return io; } }
+        public XmlNode SrcNodes { get { return srcNodes; } }
+        public int Index { get { return index; } }
+        public Dictionary<string, object> Parameters { get { return parameters; } }
+        public Guid InstanceGuid { get { return instanceGuid; } } 
 
-        public Component(XmlNode src)
+        public Component(XmlNode src, int id)
         {
+            this.index = id;
             this.srcNodes = src;
-            this.parameters = new Dictionary<string, string>();
+            this.parameters = new Dictionary<string, object>();
             this.io = new List<ComponentIO>();
+            this.instanceGuid = Guid.Empty;
 
             // Adding param in parameter dictionay
             // Component Name
-            Helper.AddValue(src.SelectNodes("items/item[@name='Name']"), this.parameters).ToString();
+            Helper.AddParam(src.SelectNodes("items/item[@name='Name']"), this.parameters, typeof(string));
             // InstanceGuid
-            Helper.AddValue(src.SelectNodes("chunks/chunk[@name='Container']/items/item[@name='InstanceGuid']"), this.parameters);
+            Helper.GetGuid(src.SelectNodes("chunks/chunk[@name='Container']/items/item[@name='InstanceGuid']"), out this.instanceGuid);
             // Source GUID for panel
-            Helper.AddValue(src.SelectNodes("chunks/chunk[@name='Container']/items/item[@name='Source']"), this.parameters);
+            Helper.AddParam(src.SelectNodes("chunks/chunk[@name='Container']/items/item[@name='Source']"), this.parameters, typeof(Guid));
             // ScriptSource for C# IDE
-            Helper.AddValue(src.SelectNodes("chunks/chunk[@name='Container']/items/item[@name='ScriptSource']"), this.parameters);
+            Helper.AddParam(src.SelectNodes("chunks/chunk[@name='Container']/items/item[@name='ScriptSource']"), this.parameters, typeof(string));
             // CodeInput for python IDE
-            Helper.AddValue(src.SelectNodes("chunks/chunk[@name='Container']/items/item[@name='CodeInput']"), this.parameters);
+            Helper.AddParam(src.SelectNodes("chunks/chunk[@name='Container']/items/item[@name='CodeInput']"), this.parameters, typeof(string));
             // Bounds
-            Helper.AddValue(src.SelectNodes("chunks/chunk[@name='Container']/chunks/chunk[@name='Attributes']/items/item[@name='Bounds']"), this.parameters);
+            Helper.AddBounds(src.SelectNodes("chunks/chunk[@name='Container']/chunks/chunk[@name='Attributes']/items/item[@name='Bounds']"), this.parameters);
             // Pivot
-            Helper.AddValue(src.SelectNodes("chunks/chunk[@name='Container']/chunks/chunk[@name='Attributes']/items/item[@name='Pivot']"), this.parameters);
+            Helper.AddPivot(src.SelectNodes("chunks/chunk[@name='Container']/chunks/chunk[@name='Attributes']/items/item[@name='Pivot']"), this.parameters);
             // Slider Value
-            Helper.AddValue(src.SelectNodes("chunks/chunk[@name='Container']/chunks/chunk[@name='Slider']/items/item[@name='Value']"), this.parameters);
+            Helper.AddParam(src.SelectNodes("chunks/chunk[@name='Container']/chunks/chunk[@name='Slider']/items/item[@name='Value']"), this.parameters, typeof(double));
 
             // input for normal gh component
             XmlNodeList param_input = src.SelectNodes("chunks/chunk[@name='Container']/chunks/chunk[@name='param_input']");
@@ -136,113 +145,86 @@ namespace TreeHopper.Deserialize
                 }
             }
         }
-
+        public dynamic Parameter(string key)
+        {
+            dynamic obj = null;
+            this.parameters.TryGetValue(key, out obj);
+            return obj;
+        }
     }
 
     public class ComponentIO
     {
+        private Guid instanceGuid;
+        private string type;
         private XmlNode srcNodes;
-        private Dictionary<string, string> parameters;
         private XmlNode pData;
+        private Dictionary<string, object> parameters;
+        private List<Guid> source;
 
-        public Dictionary<string, string> Parameters() { return this.parameters; }
-        public XmlNode PData() { return this.pData; }
-        public XmlNode SrcNodes() { return this.srcNodes; }
+        public XmlNode PData { get { return this.pData; } }
+        public XmlNode SrcNodes { get { return this.srcNodes; } }
+        public List<Guid> Source { get { return this.source; } }
+        public string Type { get { return this.type; } }
+        public Guid InstanceGuid { get { return this.instanceGuid; } }
+        public Dictionary<string, object> Parameters { get { return parameters; } }
 
         public ComponentIO(XmlNode src)
         {
             this.srcNodes = src;
-            this.parameters = new Dictionary<string, string>();
+            this.parameters = new Dictionary<string, object>();
+            this.instanceGuid = Guid.Empty;
 
             // check if it's normal GH component
             if (src.Attributes["name"].Value == "param_input" || src.Attributes["name"].Value == "param_output")
             {
                 // IO Type
-                this.parameters.Add("Type", src.Attributes["name"].Value);
+                if (src.Attributes["name"].Value == "param_input") { this.type = "Input"; }
+                else { this.type = "Output"; }
+
                 // IO Name
-                Helper.AddValue(src.SelectNodes("items/item[@name='Name']"), this.parameters);
+                Helper.AddParam(src.SelectNodes("items/item[@name='Name']"), this.parameters, typeof(string));
                 // Instance Guid
-                Helper.AddValue(src.SelectNodes("items/item[@name='InstanceGuid']"), this.parameters);
-                // Source Guid
-                Helper.AddValue(src.SelectNodes("items/item[@name='Source']"), this.parameters);
+                Helper.GetGuid(src.SelectNodes("items/item[@name='InstanceGuid']"), out this.instanceGuid);
                 // Source Count
-                Helper.AddValue(src.SelectNodes("items/item[@name='SourceCount']"), this.parameters);
+                Helper.AddParam(src.SelectNodes("items/item[@name='SourceCount']"), this.parameters, typeof(int));
                 // Bounds
-                Helper.AddValue(src.SelectNodes("chunks/chunk[@name='Attributes']/items/item[@name='Bounds']"), this.parameters);
+                Helper.AddBounds(src.SelectNodes("chunks/chunk[@name='Attributes']/items/item[@name='Bounds']"), this.parameters);
                 // Pivot
-                Helper.AddValue(src.SelectNodes("chunks/chunk[@name='Attributes']/items/item[@name='Pivot']"), this.parameters);
+                Helper.AddPivot(src.SelectNodes("chunks/chunk[@name='Attributes']/items/item[@name='Pivot']"), this.parameters);
+                // Source Guid
+                Helper.GetSource(src.SelectNodes("items/item[@name='Source']"), out this.source);
+
                 // pData
                 this.pData = src.SelectSingleNode("chunks/chunk[@name='PersistentData']");
             }
             else
             {
                 // IO Type
-                this.parameters.Add("Type", src.Attributes["name"].Value);
+                if (src.Attributes["name"].Value == "InputParam") { this.type = "Input"; }
+                else { this.type = "Output"; }
+
                 // IO Name
-                Helper.AddValue(src.SelectNodes("items/item[@name='Name']"), this.parameters);
+                Helper.AddParam(src.SelectNodes("items/item[@name='Name']"), this.parameters, typeof(string));
                 // Instance Guid
-                Helper.AddValue(src.SelectNodes("items/item[@name='InstanceGuid']"), this.parameters);
-                // Source Guid
-                Helper.AddValue(src.SelectNodes("items/item[@name='Source']"), this.parameters);
+                Helper.GetGuid(src.SelectNodes("items/item[@name='InstanceGuid']"), out this.instanceGuid);
                 // Source Count
-                Helper.AddValue(src.SelectNodes("items/item[@name='SourceCount']"), this.parameters);
+                Helper.AddParam(src.SelectNodes("items/item[@name='SourceCount']"), this.parameters, typeof(int));
                 // Bounds
-                Helper.AddValue(src.SelectNodes("chunks/chunk[@name='Attributes']/items/item[@name='Bounds']"), this.parameters);
+                Helper.AddBounds(src.SelectNodes("chunks/chunk[@name='Attributes']/items/item[@name='Bounds']"), this.parameters);
                 // Pivot
-                Helper.AddValue(src.SelectNodes("chunks/chunk[@name='Attributes']/items/item[@name='Pivot']"), this.parameters);
+                Helper.AddPivot(src.SelectNodes("chunks/chunk[@name='Attributes']/items/item[@name='Pivot']"), this.parameters);
+                // Source Guid
+                Helper.GetSource(src.SelectNodes("items/item[@name='Source']"), out this.source);
                 // pData
                 this.pData = src.SelectSingleNode("chunks/chunk[@name='PersistentData']");
             }
         }
-    }
-
-    public class Bounds
-    {
-        public int X { get; set; }
-        public int Y { get; set; }
-        public int W { get; set; }
-        public int H { get; set; }
-
-        public Bounds(int x, int y, int w, int h)
+        public dynamic Parameter(string key)
         {
-            X = x;
-            Y = y;
-            W = w;
-            H = h;
+            dynamic obj = null;
+            this.parameters.TryGetValue(key, out obj);
+            return obj;
         }
     }
-    
-    public class Input
-    {
-        public string GUID { get; set; }
-        public string InstanceGuid { get; set; }
-        public List<int> Pivot { get; set; }
-        public bool IsConnected { get; set; }
-
-        public Input(string guid, string instanceGuid, List<int> pivot, bool isConnected)
-        {
-            GUID = guid;
-            InstanceGuid = instanceGuid;
-            Pivot = pivot;
-            IsConnected = isConnected;
-        }
-    }
-
-
-    public class Output
-    {
-        public string GUID { get; set; }
-        public string InstanceGuid { get; set; }
-        public List<int> Pivot { get; set; }
-        public bool IsConnected { get; set; }
-
-        public Output(string guid, string instanceGuid, List<int> pivot, bool isConnected)
-        {
-            GUID = guid;
-            InstanceGuid = instanceGuid;
-            Pivot = pivot;
-            IsConnected = isConnected;
-        }
-    }
-
 }

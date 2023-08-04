@@ -23,7 +23,7 @@ namespace TreeHopperViewer
 
     public class MainForm : Form
     {
-        private GhxVersion ghxParser;
+        private GhxDocument ghxParser;
         private List<string> names;
         private List<Rectangle> rectanglesToDraw;
         private ToolStripMenuItem rainbowMenuItem;
@@ -106,31 +106,21 @@ namespace TreeHopperViewer
 
         private void ProcessGrasshopperFile(string filePath)
         {
-            ghxParser = new GhxVersion(filePath);
-            Dictionary<string, string> dict = ghxParser.Parameters();
+            ghxParser = new GhxDocument(filePath);
 
             rectanglesToDraw = new List<Rectangle>(); // Initialize the rectanglesToDraw list
             names = new List<string>();
 
-            foreach (Component c in ghxParser.Components())
+            foreach (Component c in ghxParser.Components)
             {
-                c.Parameters().TryGetValue("Bounds", out var value);
+                var value = c.Parameter("Bounds");
                 if (value != null)
                 {
-                    string[] parameters = value.Split(';');
-                    int x = (int)(float.Parse(parameters[1]));
-                    int y = (int)(float.Parse(parameters[3]));
-                    int width = (int)(float.Parse(parameters[5]));
-                    int height = (int)(float.Parse(parameters[7]));
-
-                    // Create a new rectangle object based on the bounds
-                    Rectangle rect = new Rectangle(x, y, width, height);
-
                     // Add the rectangle to the list
-                    rectanglesToDraw.Add(rect);
+                    rectanglesToDraw.Add(value);
 
                     // if bounds then find name
-                    c.Parameters().TryGetValue("Name", out var name);
+                    var name = c.Parameter("Name");
                     if (name != null)
                     {
                         names.Add(name);
