@@ -1,10 +1,6 @@
-﻿using Eto.Forms;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Xml;
 using TreeHopper.Deserialize;
 
@@ -18,13 +14,15 @@ namespace TreeHopper.Utility
 
         public static bool GetSource(XmlNodeList nodes, out List<Guid> guids)
         {
+            //This method specialize to parse all source guid into a list of guid that follows the order from a single input param
             guids = new List<Guid>();
-            if (nodes.Count == 1)
+            if (nodes.Count > 0)
             {
-                foreach(XmlNode node in nodes)
+                foreach (XmlNode node in nodes)
                 {
                     guids.Add(Guid.Parse(node.FirstChild.Value));
                 }
+                int test = guids.Count;
                 return true;
             }
             else { return false; }
@@ -32,7 +30,8 @@ namespace TreeHopper.Utility
         }
 
         public static bool GetGuid(XmlNodeList nodes, out Guid guid)
-        {   
+        {
+            //This method specialize to parse GUID into independent class properties
             guid = Guid.Empty;
             if (nodes.Count == 1)
             {
@@ -46,8 +45,9 @@ namespace TreeHopper.Utility
             else { return false; }
         }
 
-        public static bool AddParam(XmlNodeList nodes, Dictionary<string, object>dict, Type type)
+        public static bool AddParam(XmlNodeList nodes, Dictionary<string, object> dict, Type type)
         {
+            //This method only works for nodes than have one childnode, for parameters like bound and pivot see AddBounds() & AddPivot()
             if (nodes.Count == 1)
             {
                 XmlNode node = nodes[0];
@@ -59,7 +59,9 @@ namespace TreeHopper.Utility
                     value = node.FirstChild.Value;
                     if (type != typeof(string))
                     {
+                        //get parse method from the given type
                         var parse = type.GetMethod("Parse", new[] { typeof(string) });
+                        //Invoke the parse method, convert string to given type
                         var result = parse.Invoke(null, new object[] { value });
                         if (result != null) { value = result; }
                     }
@@ -76,6 +78,7 @@ namespace TreeHopper.Utility
 
         public static bool AddBounds(XmlNodeList nodes, Dictionary<string, object> dict)
         {
+            //this method specialize to parse the bounds of a component into System.Drawing.Rectangle
             if (nodes.Count == 1)
             {
                 XmlNode node = nodes[0];
@@ -96,6 +99,7 @@ namespace TreeHopper.Utility
 
         public static bool AddPivot(XmlNodeList nodes, Dictionary<string, object> dict)
         {
+            //this method specialize to parse the pivot of a component into System.Drawing.PointF
             if (nodes.Count == 1)
             {
                 XmlNode node = nodes[0];
@@ -103,7 +107,7 @@ namespace TreeHopper.Utility
                 XmlNode test = node.SelectSingleNode("X");
                 float x = float.Parse(node.SelectSingleNode("X").FirstChild.Value);
                 float y = float.Parse(node.SelectSingleNode("Y").FirstChild.Value);
-                PointF pt = new PointF(x,y);
+                PointF pt = new PointF(x, y);
                 dict.Add(name, pt);
                 return true;
             }
