@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace TreeHopperApp.Utils
+namespace TreeHopperViewer.Utils
 {
     public class AppUtils
     {
