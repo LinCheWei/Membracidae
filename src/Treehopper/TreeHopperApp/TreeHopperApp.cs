@@ -28,26 +28,32 @@ namespace TreeHopperViewer
     public class MainForm : Form
     {
         private GhxDocument ghxParser;
-        //Variables to plot
+        // Variables to plot
         private List<string> names;
         private List<Guid> iGuids;
         private List<PointF> pivots;
         private List<RectangleF> rectanglesToDraw;
         private ToolStripMenuItem rainbowMenuItem;
         private bool rainbowEnabled = false;
-        //Transforms
-        private float scaleX;
-        private float scaleY;
-        private float translateX;
-        private float translateY;
-        Matrix transformationMatrix;
-        //zoomies
+        // Transforms
+        // Zoom
         private float zoomLevel = 1.0f; // Initial zoom level (1.0 means 100%)
-        private PointF mousePosition = PointF.Empty;
+        private bool isPanning = false;
+        Point mouseDown;
+        int startx = 0;                         // offset of image when mouse was pressed
+        int starty = 0;
+        int imgx = 0;                         // current offset of image
+        int imgy = 0;
+
 
         public MainForm()
         {
             InitializeComponent();
+            this.MouseDown += MainForm_MouseDown;
+            this.MouseMove += MainForm_MouseMove;
+            this.MouseUp += MainForm_MouseUp;
+
+            DoubleBuffered = true;
         }
 
         private void InitializeComponent()
@@ -91,7 +97,7 @@ namespace TreeHopperViewer
             // Set the MenuStrip as the form's menu
             this.Controls.Add(menuStrip);
             rainbowMenuItem.Click += rainbowMenuItem_Click;
-            mousePosition = new PointF(this.ClientSize.Width / 2, this.ClientSize.Height / 2);
+            //mousePosition = new PointF(this.ClientSize.Width / 2, this.ClientSize.Height / 2);
         }
 
         private void rainbowMenuItem_Click(object sender, EventArgs e)
@@ -102,7 +108,6 @@ namespace TreeHopperViewer
             // Redraw the rectangles with the new color settings
             this.Invalidate();
         }
-
 
         private void OpenFile()
         {
@@ -160,162 +165,152 @@ namespace TreeHopperViewer
             this.Invalidate();
             this.WindowState = FormWindowState.Maximized;
         }
-    
-     //Calculate transformations
-    private void CalculateTransformValues()
-    {
-        if (rectanglesToDraw == null || rectanglesToDraw.Count == 0)
-            return;
 
-        float minX = rectanglesToDraw.Min(rect => rect.Left);
-        float minY = rectanglesToDraw.Min(rect => rect.Top);
-        float maxX = rectanglesToDraw.Max(rect => rect.Right);
-        float maxY = rectanglesToDraw.Max(rect => rect.Bottom);
-
-        // Calculate the size of the bounding box
-        float boundingBoxWidth = maxX - minX;
-        float boundingBoxHeight = maxY - minY;
-
-        // Calculate the new scaling factors based on the zoom level
-        float scaleX = zoomLevel;
-        float scaleY = zoomLevel;
-
-        // Calculate the translation needed to center the scaled bounding box on the mouse position
-        float translateX = mousePosition.X - scaleX * mousePosition.X;
-        float translateY = mousePosition.Y - scaleY * mousePosition.Y;
-
-        // Create a transformation matrix
-        transformationMatrix = new Matrix();
-        transformationMatrix.Translate(translateX, translateY);
-        transformationMatrix.Scale(scaleX, scaleY);
-
-        // Update the class-level variables
-        this.scaleX = scaleX;
-        this.scaleY = scaleY;
-        this.translateX = translateX;
-        this.translateY = translateY;
-    }
-
-    protected override void OnPaint(PaintEventArgs e)
+        protected override void OnPaint(PaintEventArgs e)
         {
             base.OnPaint(e);
-            CalculateTransformValues();
+            e.Graphics.InterpolationMode = InterpolationMode.HighQualityBicubic;
+            e.Graphics.SmoothingMode = SmoothingMode.HighQuality;
             if (rectanglesToDraw != null && rectanglesToDraw.Count > 0)
             {
-                // Create a transformation matrix
-                // Apply the stored transformation matrix to the mouse position
-                PointF[] mousePos = { mousePosition };
-                transformationMatrix.Invert();
-                transformationMatrix.TransformPoints(mousePos);
-                transformationMatrix.Invert();
-                PointF[] points = {};
-                if (pivots.Count > 0)
-                {
-                    points = pivots.ToArray();
-                    transformationMatrix.TransformPoints(points);
-                }
-                // Draw all rectangles from the list
-                using (Font font = new Font("Calibri", 10*scaleX))
-                //using (SolidBrush fillBrush = new SolidBrush(Color.DeepPink))
+                using (Font font = new Font("Calibri", 10 * zoomLevel))
                 using (Pen pen = new Pen(Color.Black, 1))
                 {
-                    for (int i = 0; i < rectanglesToDraw.Count; i++)
+                    foreach (var rectIndex in Enumerable.Range(0, rectanglesToDraw.Count))
                     {
-                        RectangleF rect = rectanglesToDraw[i];
-                        string name = names[i];
-        
+                        RectangleF rect = rectanglesToDraw[rectIndex];
+                        string name = names[rectIndex];
+
                         // Apply the transformation to the rectangle
-                        GraphicsPath path = new GraphicsPath();
-                        path.AddRectangle(rect);
-                        path.Transform(transformationMatrix);
-                        RectangleF scaledRect = path.GetBounds();
-                        Color customColor = AppUtils.GetRectangleColor(i, rectanglesToDraw.Count, rainbowEnabled);
+                        RectangleF scaledRect = new RectangleF(
+                            (rect.Left + imgx) * zoomLevel,
+                            (rect.Top + imgy) * zoomLevel,
+                            rect.Width * zoomLevel,
+                            rect.Height * zoomLevel
+                        );
+
+                        Color customColor = AppUtils.GetRectangleColor(rectIndex, rectanglesToDraw.Count, rainbowEnabled);
 
                         // Draw the scaled rectangle with the custom gradient color
                         using (SolidBrush fillBrush = new SolidBrush(customColor))
                         {
                             e.Graphics.FillRectangle(fillBrush, scaledRect);
-                            //e.Graphics.DrawRectangle(pen, scaledRect.Left, scaledRect.Top, scaledRect.Width, scaledRect.Height);
                         }
-
 
                         // Add rectangle text
                         int textX = (int)(scaledRect.Left + 5); // Adjust the X position of the text
                         int textY = (int)(scaledRect.Top + 5);  // Adjust the Y position of the text
                         e.Graphics.DrawString(name, font, Brushes.Black, textX, textY);
                     }
-                    if (points.Length > 0)
+
+                    foreach (var pivot in pivots)
                     {
-                        foreach (PointF pivot in points)
-                        {
-                            e.Graphics.DrawEllipse(pen, pivot.X, pivot.Y, 2, 2);
-                        }
+                        PointF transformedPivot = new PointF(
+                            (pivot.X + imgx) * zoomLevel,
+                            (pivot.Y + imgy) * zoomLevel
+                        );
+                        e.Graphics.DrawEllipse(pen, transformedPivot.X, transformedPivot.Y, 2, 2);
                     }
                 }
             }
         }
-    protected override void OnMouseClick(MouseEventArgs e)
+
+        protected override void OnMouseClick(MouseEventArgs e)
         {
             base.OnMouseClick(e);
-            //CalculateTransformValues();
-            // Apply the stored transformation matrix to the mouse click coordinates
-            PointF[] mouseClick = { new PointF(e.X, e.Y) };
-            transformationMatrix.Invert();
-            transformationMatrix.TransformPoints(mouseClick);
-            transformationMatrix.Invert();
-
-            // Check if the mouse click occurred within any of the rectangles
-            for (int i = 0; i < rectanglesToDraw.Count; i++)
+            if (e.Button == MouseButtons.Left)
             {
-                RectangleF rect = rectanglesToDraw[i];
-                if (rect.Contains(mouseClick[0]))
+                PointF transformedMouseClick = new PointF(
+                    (e.X - imgx) / zoomLevel,
+                    (e.Y - imgy) / zoomLevel
+                );
+
+                // Check if the mouse click occurred within any of the rectangles
+                for (int i = 0; i < rectanglesToDraw.Count; i++)
                 {
-                    // Perform action when the rectangle is clicked
-                    Guid instanceGuid = iGuids[i];
-                    PointF pivot = pivots[i];
+                    RectangleF rect = rectanglesToDraw[i];
+                    if (rect.Contains(transformedMouseClick))
+                    {
+                        // Perform action when the rectangle is clicked
+                        Guid instanceGuid = iGuids[i];
+                        PointF pivot = pivots[i];
 
-                    Component component = ghxParser.Components.FirstOrDefault(c => c.InstanceGuid == instanceGuid);
-                    //Save component GUID
-                    //Save component Input Param or param_input if any
-                    //Output if any
-                    //All GUID
-                    //Save Script if any
-                    //Otherwise save source if any
-                    //if no pivot create in pivot and out pivot
-                    //Don't really know what else
+                        Component component = ghxParser.Components.FirstOrDefault(c => c.InstanceGuid == instanceGuid);
 
-                    // For example, display a message box showing the name and pivot point
-                    string name = component.Parameter("Name");
-                    string code;
-                    if (component.Parameter("CodeInput") != null) code = component.Parameter("CodeInput");
-                    else if (component.Parameter("ScriptSource") != null) code = component.Parameter("ScriptSource");
-                    else code = null;
-                    string message = $"Component Name = {name}\n" + $"Component GUID = {instanceGuid}\n " +
-                        $"Value = {code}";
-                    MessageBox.Show(message, "Rectangle Clicked");
+                        // For example, display a message box showing the name and pivot point
+                        string name = component.Parameter("Name");
+                        string code;
+                        if (component.Parameter("CodeInput") != null) code = component.Parameter("CodeInput");
+                        else if (component.Parameter("ScriptSource") != null) code = component.Parameter("ScriptSource");
+                        else code = null;
+                        string message = $"Component Name = {name}\n" + $"Component GUID = {instanceGuid}\n " +
+                            $"Value = {code}";
+                        MessageBox.Show(message, "Rectangle Clicked");
+                    }
                 }
             }
         }
-    protected override void OnMouseWheel(MouseEventArgs e)
+
+        protected override void OnMouseWheel(MouseEventArgs e)
         {
             base.OnMouseWheel(e);
+            float oldZoom = zoomLevel;
+            if(e.Delta > 0)
+            {
+                zoomLevel += 0.1F;
+            }
+            else if(e.Delta < 0)
+            {
+                zoomLevel = Math.Max(zoomLevel - 0.1F, 0.01F);
+            }
 
-            // Recalculate the transformations
-            CalculateTransformValues();
+            Point mousePosNow = e.Location;
 
-            // Determine the zoom direction (positive or negative)
-            int direction = Math.Sign(e.Delta);
+            int x = mousePosNow.X - this.Location.X;
+            int y = mousePosNow .Y - this.Location.Y;
 
-            // Adjust the zoom level based on the direction and a fixed factor (you can adjust this factor as needed)
-            float zoomFactor = 1.2f;
-            zoomLevel *= direction == 1 ? zoomFactor : 1.0f / zoomFactor;
+            int oldx = (int)(x / oldZoom);
+            int oldy = (int)(y / oldZoom);
 
-            // Update the mouse position
-            mousePosition = e.Location;
+            int newx = (int)(x/ zoomLevel);
+            int newy = (int)(y/ zoomLevel);
 
-            // Redraw the form
+            imgx = newx - oldx + imgx;
+            imgy = newy - oldy + imgy;
+
             this.Invalidate();
         }
+        private void MainForm_MouseDown(object sender, MouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Right)
+            {
+                if (!isPanning)
+                {
+                    isPanning = true;
+                    mouseDown = e.Location;
+                    startx = imgx; starty = imgy;
+                }
+            }
+        }
+        private void MainForm_MouseMove(object sender, MouseEventArgs e)
+        {
+            if(e.Button == MouseButtons.Right)
+            {
+                Point mousePosition = e.Location;
 
+                int deltaX = mousePosition.X - mouseDown.X;
+                int deltaY = mousePosition.Y - mouseDown.Y;
+
+                imgx = (int)(startx + (deltaX / zoomLevel));  // calculate new offset of image based on the current zoom factor
+                imgy = (int)(starty + (deltaY / zoomLevel));
+
+                this.Refresh();
+            }
+        }
+        private void MainForm_MouseUp(object sender, MouseEventArgs e)
+        {
+            isPanning = false;
+        }
     }
+
 }

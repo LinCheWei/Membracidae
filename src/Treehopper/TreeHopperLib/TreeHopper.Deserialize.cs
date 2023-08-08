@@ -108,7 +108,7 @@ namespace TreeHopper.Deserialize
                         {
                             RectangleF bounds = r.Parameter("Bounds");
                             io.AddConnection(new Connection(r.ComponentIndex, r.Index, new PointF(bounds.X + bounds.Width, bounds.Y + bounds.Height / 2)));
-                            r.isConnected = true;
+                            r.IsConnected = true;
                         }
                     }
                 }

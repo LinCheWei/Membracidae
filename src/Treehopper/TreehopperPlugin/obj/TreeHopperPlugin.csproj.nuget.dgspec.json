@@ -1,14 +1,14 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\chewei\\Documents\\GitHub\\Membracidae\\src\\Treehopper\\TreehopperPlugin\\TreeHopperPlugin.csproj": {}
+    "C:\\Users\\akango\\Documents\\github\\Membracidae\\src\\Treehopper\\TreehopperPlugin\\TreeHopperPlugin.csproj": {}
   },
   "projects": {
-    "C:\\Users\\chewei\\Documents\\GitHub\\Membracidae\\src\\Treehopper\\TreeHopperLib\\TreeHopper.csproj": {
+    "C:\\Users\\akango\\Documents\\github\\Membracidae\\src\\Treehopper\\TreeHopperLib\\TreeHopper.csproj": {
       "restore": {
-        "projectUniqueName": "C:\\Users\\chewei\\Documents\\GitHub\\Membracidae\\src\\Treehopper\\TreeHopperLib\\TreeHopper.csproj",
+        "projectUniqueName": "C:\\Users\\akango\\Documents\\github\\Membracidae\\src\\Treehopper\\TreeHopperLib\\TreeHopper.csproj",
         "projectName": "TreeHopper",
-        "projectPath": "C:\\Users\\chewei\\Documents\\GitHub\\Membracidae\\src\\Treehopper\\TreeHopperLib\\TreeHopper.csproj",
+        "projectPath": "C:\\Users\\akango\\Documents\\github\\Membracidae\\src\\Treehopper\\TreeHopperLib\\TreeHopper.csproj",
         "frameworks": {
           "net48": {
             "projectReferences": {}
@@ -19,21 +19,17 @@
         "net48": {}
       }
     },
-    "C:\\Users\\chewei\\Documents\\GitHub\\Membracidae\\src\\Treehopper\\TreehopperPlugin\\TreeHopperPlugin.csproj": {
+    "C:\\Users\\akango\\Documents\\github\\Membracidae\\src\\Treehopper\\TreehopperPlugin\\TreeHopperPlugin.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\chewei\\Documents\\GitHub\\Membracidae\\src\\Treehopper\\TreehopperPlugin\\TreeHopperPlugin.csproj",
+        "projectUniqueName": "C:\\Users\\akango\\Documents\\github\\Membracidae\\src\\Treehopper\\TreehopperPlugin\\TreeHopperPlugin.csproj",
         "projectName": "TreeHopperPlugin",
-        "projectPath": "C:\\Users\\chewei\\Documents\\GitHub\\Membracidae\\src\\Treehopper\\TreehopperPlugin\\TreeHopperPlugin.csproj",
-        "packagesPath": "C:\\Users\\chewei\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\chewei\\Documents\\GitHub\\Membracidae\\src\\Treehopper\\TreehopperPlugin\\obj\\",
+        "projectPath": "C:\\Users\\akango\\Documents\\github\\Membracidae\\src\\Treehopper\\TreehopperPlugin\\TreeHopperPlugin.csproj",
+        "packagesPath": "C:\\Users\\akango\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\akango\\Documents\\github\\Membracidae\\src\\Treehopper\\TreehopperPlugin\\obj\\",
         "projectStyle": "PackageReference",
-        "fallbackFolders": [
-          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
-        ],
         "configFilePaths": [
-          "C:\\Users\\chewei\\AppData\\Roaming\\NuGet\\NuGet.Config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
+          "C:\\Users\\akango\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
@@ -47,8 +43,8 @@
           "net48": {
             "targetAlias": "net48",
             "projectReferences": {
-              "C:\\Users\\chewei\\Documents\\GitHub\\Membracidae\\src\\Treehopper\\TreeHopperLib\\TreeHopper.csproj": {
-                "projectPath": "C:\\Users\\chewei\\Documents\\GitHub\\Membracidae\\src\\Treehopper\\TreeHopperLib\\TreeHopper.csproj"
+              "C:\\Users\\akango\\Documents\\github\\Membracidae\\src\\Treehopper\\TreeHopperLib\\TreeHopper.csproj": {
+                "projectPath": "C:\\Users\\akango\\Documents\\github\\Membracidae\\src\\Treehopper\\TreeHopperLib\\TreeHopper.csproj"
               }
             }
           }
@@ -77,7 +73,7 @@
               "version": "[1.0.8.28, )"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.304\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.306\\RuntimeIdentifierGraph.json"
         }
       }
     }
