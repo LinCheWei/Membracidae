@@ -6,7 +6,8 @@ using System.Windows.Forms;
 using TreeHopper.Deserialize;
 
 namespace TreeHopperViewer
-{
+{   
+    // Main form class inherits from Form
     public partial class MainForm : Form
     {
         public GhxDocument ghxParser;
@@ -18,11 +19,13 @@ namespace TreeHopperViewer
         public bool rainbowEnabled = false;
         public ToolStripMenuItem rainbowMenuItem;
     }
-
+    // Partial class to hold the InitializeComponents() method
     public partial class MainForm
     { 
+        // Initialize the form
         public void InitializeComponent()
         {
+            // Set the form's title
             this.Text = "TreeHopper Viewer";
             string iconFilePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "treehopper.ico");
             if (File.Exists(iconFilePath))
@@ -41,18 +44,12 @@ namespace TreeHopperViewer
             ToolStripMenuItem openMenuItem = new ToolStripMenuItem("Open");
             ToolStripMenuItem gitVersionMenuItem = new ToolStripMenuItem("Version");
             rainbowMenuItem = new ToolStripMenuItem("Rainbow");
-            // compareMenuItem = new ToolStripMenuItem("Compare");
-
-            openMenuItem.Click += (sender, e) =>
-                {
-                    OpenFile();
-                };
+            openMenuItem.Click += (sender, e) => OpenFile();
 
             // Add the "Open" menu item to the "File" menu
             fileMenu.DropDownItems.Add(openMenuItem);
             gitMenu.DropDownItems.Add(gitVersionMenuItem);
             viewMenu.DropDownItems.Add(rainbowMenuItem);
-            //viewMenu.DropDownItems.Add(compareMenuItem);
 
             // Add the menus to the MenuStrip control
             menuStrip.Items.Add(fileMenu);
@@ -63,7 +60,8 @@ namespace TreeHopperViewer
             this.Controls.Add(menuStrip);
             rainbowMenuItem.Click += rainbowMenuItem_Click;
         }
-
+        
+        // Event handler for the "Rainbow" menu item to toggle the rainbowEnabled flag which sets the color mode of document
         public void rainbowMenuItem_Click(object sender, EventArgs e)
         {
             // Toggle the rainbowEnabled flag when the "Rainbow" menu item is clicked
@@ -73,6 +71,7 @@ namespace TreeHopperViewer
             this.Invalidate();
         }
 
+        // Event handler for the "Open" menu item to open a Grasshopper file
         public void OpenFile()
         {
             // Create an instance of OpenFileDialog
@@ -90,10 +89,10 @@ namespace TreeHopperViewer
             }
         }
 
+        // Method to parse the Grasshopper file and store the information to draw
         private void ProcessGrasshopperFile(string filePath)
         {
             ghxParser = new GhxDocument(filePath);
-
             rectanglesToDraw = new List<RectangleF>(); // Initialize the rectanglesToDraw list
             iGuids = new List<Guid>();
             names = new List<string>();
@@ -105,7 +104,6 @@ namespace TreeHopperViewer
                 {
                     // Add the rectangle to the list
                     rectanglesToDraw.Add(value);
-
                     // if bounds then find name
                     Guid instanceGuid = c.InstanceGuid;
                     string name = c.Parameter("Name");

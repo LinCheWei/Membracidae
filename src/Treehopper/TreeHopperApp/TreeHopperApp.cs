@@ -13,7 +13,8 @@ using TreeHopper.Utility;
 using TreeHopperViewer.Utils;
 
 namespace TreeHopperViewer
-{
+{   
+    // This is how we run the whole application
     internal class TreeHopperApp
     {
         [STAThread]
@@ -27,16 +28,17 @@ namespace TreeHopperViewer
 
     public partial class MainForm : Form
     {
-        // Zoom
+        // Zoom and other stories
         private float zoomLevel = 1.0f; // Initial zoom level (1.0 means 100%)
         private bool isPanning = false;
         Point mouseDown;
+        //Offset in x and y where the form is drawn
         int startx = 0;                         // offset of image when mouse was pressed
         int starty = 0;
-        int imgx = 0;                         // current offset of image
+        int imgx = 0;                           // current offset of image
         int imgy = 0;
 
-
+        // Initialize the form and handle mouse events like pan/zoom
         public MainForm()
         {
             InitializeComponent();
@@ -47,6 +49,7 @@ namespace TreeHopperViewer
             DoubleBuffered = true;
         }
 
+        //Does all the drawing hard work
         protected override void OnPaint(PaintEventArgs e)
         {
             base.OnPaint(e);
@@ -96,6 +99,7 @@ namespace TreeHopperViewer
             }
         }
 
+        //Event handler for when user clicks on the rectangle(GH Component)
         protected override void OnMouseClick(MouseEventArgs e)
         {
             base.OnMouseClick(e);
@@ -132,6 +136,7 @@ namespace TreeHopperViewer
             }
         }
 
+        //Event handler for when mouse wheel is scrolled
         protected override void OnMouseWheel(MouseEventArgs e)
         {
             base.OnMouseWheel(e);
@@ -161,6 +166,8 @@ namespace TreeHopperViewer
 
             this.Invalidate();
         }
+
+        //Event handler for when mouse is pressed
         private void MainForm_MouseDown(object sender, MouseEventArgs e)
         {
             if (e.Button == MouseButtons.Right)
@@ -173,6 +180,8 @@ namespace TreeHopperViewer
                 }
             }
         }
+
+        //Event handler for when mouse is moved
         private void MainForm_MouseMove(object sender, MouseEventArgs e)
         {
             if(e.Button == MouseButtons.Right)
@@ -188,6 +197,8 @@ namespace TreeHopperViewer
                 this.Refresh();
             }
         }
+
+        //Event handler for when mouse is released
         private void MainForm_MouseUp(object sender, MouseEventArgs e)
         {
             isPanning = false;
