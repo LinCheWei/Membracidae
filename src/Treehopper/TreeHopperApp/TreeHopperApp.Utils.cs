@@ -13,18 +13,20 @@ namespace TreeHopperViewer.Utils
         // Get the color for a rectangle based on the index and total number of rectangles
         public static Color GetRectangleColor(int index, int totalRectangles, bool rainbowEnabled)
         {
-            if (rainbowEnabled) // If rainbow is enabled, use the rainbow color scheme
+            if (rainbowEnabled)
             {
-                // Calculate the hue value based on the index and total number of rectangles
-                float hue = (120f / totalRectangles) * index + 240;
-                // Calculate the brightness value based on the index
-                float brightness = 0.5f + (float)index / (totalRectangles - 1) * 0.5f;
-                return ColorFromAhsb(255, hue, 1, brightness);
+                // Calculate the red and blue components based on the index and total number of rectangles
+                int red = (int)(255 * (1 - (float)index / (totalRectangles - 1)));
+                int blue = (int)(255 * ((float)index / (totalRectangles - 1)));
+
+                // Create a Color object using the calculated red and blue components
+                return Color.FromArgb(232, red, 0, blue);
             }
             else
             {
                 // Default pink color
-                return Color.DeepPink;
+                Color defColor = Color.FromArgb(232, Color.DeepPink);
+                return defColor;
             }
         }
         //Converts HSB to RGB

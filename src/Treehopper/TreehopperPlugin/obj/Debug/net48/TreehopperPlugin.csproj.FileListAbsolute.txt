@@ -52,3 +52,8 @@ C:\Users\chewei\Documents\GitHub\Membracidae\src\Treehopper\TreehopperPlugin\obj
 C:\Users\chewei\Documents\GitHub\Membracidae\src\Treehopper\TreehopperPlugin\obj\Debug\net48\TreeHopperPlugin.csproj.CopyComplete
 C:\Users\chewei\Documents\GitHub\Membracidae\src\Treehopper\TreehopperPlugin\obj\Debug\net48\TreeHopperPlugin.gha
 C:\Users\chewei\Documents\GitHub\Membracidae\src\Treehopper\TreehopperPlugin\obj\Debug\net48\TreeHopperPlugin.pdb
+C:\Users\akango\Documents\github\Membracidae\src\Treehopper\TreehopperPlugin\obj\Debug\net48\TreeHopperPlugin.csproj.AssemblyReference.cache
+C:\Users\akango\Documents\github\Membracidae\src\Treehopper\TreehopperPlugin\obj\Debug\net48\TreeHopperPlugin.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\akango\Documents\github\Membracidae\src\Treehopper\TreehopperPlugin\obj\Debug\net48\TreeHopperPlugin.AssemblyInfoInputs.cache
+C:\Users\akango\Documents\github\Membracidae\src\Treehopper\TreehopperPlugin\obj\Debug\net48\TreeHopperPlugin.AssemblyInfo.cs
+C:\Users\akango\Documents\github\Membracidae\src\Treehopper\TreehopperPlugin\obj\Debug\net48\TreeHopperPlugin.csproj.CoreCompileInputs.cache

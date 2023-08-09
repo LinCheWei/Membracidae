@@ -15,6 +15,8 @@ namespace TreeHopperViewer
         private List<string> names;
         private List<Guid> iGuids;
         private List<PointF> pivots;
+        private List<PointF> pivotsTo;
+        private List<List<PointF>> pointPair;    
         private List<RectangleF> rectanglesToDraw;
         public bool rainbowEnabled = false;
         public ToolStripMenuItem rainbowMenuItem;
@@ -97,6 +99,9 @@ namespace TreeHopperViewer
             iGuids = new List<Guid>();
             names = new List<string>();
             pivots = new List<PointF>();
+            pivotsTo = new List<PointF>();
+            pointPair = new List<List<PointF>>();
+
             foreach (Component c in ghxParser.Components)
             {
                 var value = c.Parameter("Bounds");
@@ -120,12 +125,30 @@ namespace TreeHopperViewer
                     foreach (var o in IOs)
                     {
                         pivots.Add(o.Parameter("Pivot"));
+                        if (o.IsConnected)
+                        {
+                            foreach (Connection end in o.Connections)
+                            {
+                                List<PointF> points = new List<PointF>();
+                                PointF startPoint = o.Parameter("Pivot");
+                                PointF endPoint = end.Pivot;
+
+                                float moveFactor = Math.Abs(endPoint.X - startPoint.X) / 3;
+
+                                PointF nextToStart = new PointF((startPoint.X - moveFactor),startPoint.Y);
+                                PointF nextToEnd = new PointF((endPoint.X + moveFactor), endPoint.Y);
+                                points.Add(startPoint);
+                                points.Add(nextToStart);
+                                points.Add(nextToEnd);
+                                points.Add(endPoint);
+                                pointPair.Add(points);
+                            }
+                        }
                     }
                 }
             }
             // Trigger the drawing of rectangles after parsing all components
             this.Invalidate();
-            this.WindowState = FormWindowState.Maximized;
         }
     }
 }

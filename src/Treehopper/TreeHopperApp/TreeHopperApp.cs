@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Win32;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Deployment.Application;
@@ -31,12 +32,12 @@ namespace TreeHopperViewer
         // Zoom and other stories
         private float zoomLevel = 1.0f; // Initial zoom level (1.0 means 100%)
         private bool isPanning = false;
-        Point mouseDown;
+        PointF mouseDown;
         //Offset in x and y where the form is drawn
-        int startx = 0;                         // offset of image when mouse was pressed
-        int starty = 0;
-        int imgx = 0;                           // current offset of image
-        int imgy = 0;
+        float startx = 0;                         // offset of image when mouse was pressed
+        float starty = 0;
+        float imgx = 0;                           // current offset of image
+        float imgy = 0;
 
         // Initialize the form and handle mouse events like pan/zoom
         public MainForm()
@@ -46,7 +47,10 @@ namespace TreeHopperViewer
             this.MouseMove += MainForm_MouseMove;
             this.MouseUp += MainForm_MouseUp;
 
+            this.WindowState = FormWindowState.Maximized;
             DoubleBuffered = true;
+
+            this.AutoScaleMode = AutoScaleMode.Dpi;
         }
 
         //Does all the drawing hard work
@@ -55,82 +59,128 @@ namespace TreeHopperViewer
             base.OnPaint(e);
             e.Graphics.InterpolationMode = InterpolationMode.HighQualityBicubic;
             e.Graphics.SmoothingMode = SmoothingMode.HighQuality;
+
             if (rectanglesToDraw != null && rectanglesToDraw.Count > 0)
             {
                 using (Font font = new Font("Calibri", 10 * zoomLevel))
-                using (Pen pen = new Pen(Color.Black, 1))
+                using (Pen pen = new Pen(Color.Black, 1 * zoomLevel))
                 {
-                    foreach (var rectIndex in Enumerable.Range(0, rectanglesToDraw.Count))
-                    {
-                        RectangleF rect = rectanglesToDraw[rectIndex];
-                        string name = names[rectIndex];
+                    // Draw Bezier Curves
+                    DrawWires(e.Graphics, pen);
 
-                        // Apply the transformation to the rectangle
-                        RectangleF scaledRect = new RectangleF(
-                            (rect.Left + imgx) * zoomLevel,
-                            (rect.Top + imgy) * zoomLevel,
-                            rect.Width * zoomLevel,
-                            rect.Height * zoomLevel
-                        );
+                    // Draw Rectangles
+                    DrawRectangles(e.Graphics, font, pen);
 
-                        Color customColor = AppUtils.GetRectangleColor(rectIndex, rectanglesToDraw.Count, rainbowEnabled);
-
-                        // Draw the scaled rectangle with the custom gradient color
-                        using (SolidBrush fillBrush = new SolidBrush(customColor))
-                        {
-                            e.Graphics.FillRectangle(fillBrush, scaledRect);
-                        }
-
-                        // Add rectangle text
-                        int textX = (int)(scaledRect.Left + 5); // Adjust the X position of the text
-                        int textY = (int)(scaledRect.Top + 5);  // Adjust the Y position of the text
-                        e.Graphics.DrawString(name, font, Brushes.Black, textX, textY);
-                    }
-
-                    foreach (var pivot in pivots)
-                    {
-                        PointF transformedPivot = new PointF(
-                            (pivot.X + imgx) * zoomLevel,
-                            (pivot.Y + imgy) * zoomLevel
-                        );
-                        e.Graphics.DrawEllipse(pen, transformedPivot.X, transformedPivot.Y, 2, 2);
-                    }
+                    // Draw Points
+                    DrawPivots(e.Graphics, pen, 2*zoomLevel);
                 }
             }
         }
 
+        private void DrawWires(Graphics g, Pen pen)
+        {
+            if (pointPair != null)
+            {
+                foreach (List<PointF> plist in pointPair)
+                {
+                    List<PointF> transformedPairs = new List<PointF>(transformPoints(plist, imgx, imgy, zoomLevel));
+                    g.DrawBezier(pen, transformedPairs[0], transformedPairs[1], transformedPairs[2], transformedPairs[3]);
+                }
+            }
+        }
+
+        private void DrawRectangles(Graphics g, Font font, Pen pen)
+        {
+            foreach (var rectIndex in Enumerable.Range(0, rectanglesToDraw.Count))
+            {
+                RectangleF rect = rectanglesToDraw[rectIndex];
+                string name = names[rectIndex];
+
+                // Apply the transformation to the rectangle
+                RectangleF scaledRect = new RectangleF(
+                    (rect.Left + imgx) * zoomLevel,
+                    (rect.Top + imgy) * zoomLevel,
+                    rect.Width * zoomLevel,
+                    rect.Height * zoomLevel
+                );
+
+                Color customColor = AppUtils.GetRectangleColor(rectIndex, rectanglesToDraw.Count, rainbowEnabled);
+
+                // Draw the scaled rectangle with the custom gradient color
+                using (SolidBrush fillBrush = new SolidBrush(customColor))
+                {
+                    g.FillRectangle(fillBrush, scaledRect);
+                }
+
+                // Add rectangle text
+                float textX = (scaledRect.Left + 5); // Adjust the X position of the text
+                float textY = (scaledRect.Top + 5);  // Adjust the Y position of the text
+                g.DrawString(name, font, Brushes.Black, textX, textY);
+            }
+        }
+
+        private void DrawPivots(Graphics g, Pen pen, float dotSize)
+        {
+            List<PointF> transformedPivots = new List<PointF>(transformPoints(pivots, imgx, imgy, zoomLevel));
+            foreach (PointF pivot in transformedPivots)
+            {
+                g.DrawEllipse(pen, pivot.X, pivot.Y, dotSize, dotSize);
+            }
+        }
+
+
+        public List<PointF> transformPoints(List<PointF> points, float imgx, float imgy, float zoom)
+        {
+            List<PointF> tPoints = new List<PointF> ();
+            foreach (PointF p in points)
+            {
+                PointF transformedPt = new PointF(
+                    (p.X + imgx) * zoomLevel,
+                    (p.Y + imgy) * zoomLevel
+                );
+
+                tPoints.Add(transformedPt);
+
+            }
+            return tPoints;
+        }
         //Event handler for when user clicks on the rectangle(GH Component)
         protected override void OnMouseClick(MouseEventArgs e)
         {
             base.OnMouseClick(e);
             if (e.Button == MouseButtons.Left)
             {
-                PointF transformedMouseClick = new PointF(
-                    (e.X - imgx) / zoomLevel,
-                    (e.Y - imgy) / zoomLevel
-                );
-
                 // Check if the mouse click occurred within any of the rectangles
-                for (int i = 0; i < rectanglesToDraw.Count; i++)
+                foreach (Component c in ghxParser.Components)
                 {
-                    RectangleF rect = rectanglesToDraw[i];
-                    if (rect.Contains(transformedMouseClick))
+
+                    var rect = c.Parameter("Bounds");
+
+                    if (rect != null)
                     {
-                        // Perform action when the rectangle is clicked
-                        Guid instanceGuid = iGuids[i];
-                        PointF pivot = pivots[i];
 
-                        Component component = ghxParser.Components.FirstOrDefault(c => c.InstanceGuid == instanceGuid);
+                        RectangleF scaledRect = new RectangleF(
+                        (rect.Left + imgx) * zoomLevel,
+                        (rect.Top + imgy) * zoomLevel,
+                        rect.Width * zoomLevel,
+                        rect.Height * zoomLevel
+                    );
 
-                        // For example, display a message box showing the name and pivot point
-                        string name = component.Parameter("Name");
-                        string code;
-                        if (component.Parameter("CodeInput") != null) code = component.Parameter("CodeInput");
-                        else if (component.Parameter("ScriptSource") != null) code = component.Parameter("ScriptSource");
-                        else code = null;
-                        string message = $"Component Name = {name}\n" + $"Component GUID = {instanceGuid}\n " +
-                            $"Value = {code}";
-                        MessageBox.Show(message, "Rectangle Clicked");
+                        if (scaledRect.Contains(e.Location))
+                        {
+                            // Perform action when the rectangle is clicked
+                            Guid instanceGuid = c.InstanceGuid;
+
+                            // For example, display a message box showing the name and pivot point
+                            string name = c.Parameter("Name");
+                            string code;
+                            if (c.Parameter("CodeInput") != null) code = c.Parameter("CodeInput");
+                            else if (c.Parameter("ScriptSource") != null) code = c.Parameter("ScriptSource");
+                            else code = null;
+                            string message = $"Component Name = {name}\n" + $"Component GUID = {instanceGuid}\n " +
+                                $"Value = {code}";
+                            MessageBox.Show(message, "Rectangle Clicked");
+                        }
                     }
                 }
             }
@@ -152,14 +202,14 @@ namespace TreeHopperViewer
 
             Point mousePosNow = e.Location;
 
-            int x = mousePosNow.X - this.Location.X;
-            int y = mousePosNow .Y - this.Location.Y;
+            float x = mousePosNow.X - this.Location.X;
+            float y = mousePosNow .Y - this.Location.Y;
 
-            int oldx = (int)(x / oldZoom);
-            int oldy = (int)(y / oldZoom);
+            float oldx = (x / oldZoom);
+            float oldy = (y / oldZoom);
 
-            int newx = (int)(x/ zoomLevel);
-            int newy = (int)(y/ zoomLevel);
+            float newx = (x/ zoomLevel);
+            float newy = (y/ zoomLevel);
 
             imgx = newx - oldx + imgx;
             imgy = newy - oldy + imgy;
@@ -188,14 +238,13 @@ namespace TreeHopperViewer
             {
                 Point mousePosition = e.Location;
 
-                int deltaX = mousePosition.X - mouseDown.X;
-                int deltaY = mousePosition.Y - mouseDown.Y;
+                float deltaX = mousePosition.X - mouseDown.X;
+                float deltaY = mousePosition.Y - mouseDown.Y;
 
-                imgx = (int)(startx + (deltaX / zoomLevel));  // calculate new offset of image based on the current zoom factor
-                imgy = (int)(starty + (deltaY / zoomLevel));
-
-                this.Refresh();
+                imgx = (startx + (deltaX / zoomLevel));  // calculate new offset of image based on the current zoom factor
+                imgy = (starty + (deltaY / zoomLevel));
             }
+            this.Invalidate();
         }
 
         //Event handler for when mouse is released
@@ -203,6 +252,7 @@ namespace TreeHopperViewer
         {
             isPanning = false;
         }
+
     }
 
 }
