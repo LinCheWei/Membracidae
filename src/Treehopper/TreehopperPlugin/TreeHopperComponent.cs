@@ -88,28 +88,22 @@ namespace TreeHopperPlugin
                 DA.SetDataList(0, versionId);
 
                 List<string> param = new List<string>();
-                GhxVersion local = new GhxVersion(doc.FilePath);
-                Dictionary<string, string> dict = local.Parameters();
+                GhxDocument local = new GhxDocument(doc.FilePath);
                 
-                foreach (KeyValuePair<string, string> kvp in dict)
-                {
-                    param.Add(kvp.ToString());   
-                }
-
                 DA.SetDataList(1, param);
 
                 List<string> cp = new List<string>();
-
-                foreach (Component c in local.Components())
+                /*
+                foreach (Component c in local.Components)
                 {
-                    foreach (KeyValuePair<string, string> kvp in c.Parameters())
+                    foreach (KeyValuePair<object, string> kvp in c.Parameters)
                     {
                         cp.Add(kvp.ToString());
                     }
                     
-                    foreach (ComponentIO cio in c.IOs())
+                    foreach (ComponentIO cio in c.IO)
                     {
-                        foreach (KeyValuePair<string, string> pair in cio.Parameters())
+                        foreach (KeyValuePair<string, object> pair in cio.Parameters)
                         {
                             cp.Add(pair.ToString());
                         }
@@ -118,6 +112,7 @@ namespace TreeHopperPlugin
 
                     cp.Add("");
                 }
+                */
 
                 DA.SetDataList(2, cp);
 

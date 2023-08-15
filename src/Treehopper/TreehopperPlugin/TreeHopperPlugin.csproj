@@ -9,6 +9,7 @@
     <BaseOutputPath>bin\</BaseOutputPath>
 	  <GrasshopperTargetRhinoceros>7.0</GrasshopperTargetRhinoceros>
 	  <GrasshopperExePath>C:\Program Files\Rhino 7\System\Rhino.exe</GrasshopperExePath>
+	  <Platforms>AnyCPU;x64</Platforms>
   </PropertyGroup>
   
   <ItemGroup>
@@ -18,17 +19,49 @@
   </ItemGroup>
   
   <ItemGroup>
-    <ProjectReference Include="..\TreeHopperLib\TreeHopper.csproj" />
+    <ProjectReference Include="..\TreeHopperApp\TreeHopperApp.csproj" />
+    <ProjectReference Include="..\TreeHopperLib\TreeHopperLib.csproj" />
   </ItemGroup>
   
   <ItemGroup>
     <Reference Include="System.Windows.Forms" />
   </ItemGroup>
   
+  <ItemGroup>
+    <Compile Update="Properties\Settings.Designer.cs">
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+    </Compile>
+  </ItemGroup>
+  
+  <ItemGroup>
+    <None Update="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+  </ItemGroup>
+  
   <PropertyGroup Condition="$(Configuration) == 'Debug' AND $([MSBuild]::IsOSPlatform(Windows))">
     <StartProgram>C:\Program Files\Rhino 7\System\Rhino.exe</StartProgram>
     <StartArguments></StartArguments>
     <StartAction>Program</StartAction>
+  </PropertyGroup>
+  
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DebugType>embedded</DebugType>
+  </PropertyGroup>
+  
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <DebugType>embedded</DebugType>
+  </PropertyGroup>
+  
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <DebugType>embedded</DebugType>
+  </PropertyGroup>
+  
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <DebugType>embedded</DebugType>
   </PropertyGroup>
 
 </Project>

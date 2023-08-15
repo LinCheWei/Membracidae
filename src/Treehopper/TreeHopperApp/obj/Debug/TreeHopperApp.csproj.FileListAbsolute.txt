@@ -70,9 +70,7 @@ C:\Users\akango\Documents\github\Membracidae\src\Treehopper\TreeHopperApp\bin\De
 C:\Users\akango\Documents\github\Membracidae\src\Treehopper\TreeHopperApp\bin\Debug\TreeHopperApp.exe.config
 C:\Users\akango\Documents\github\Membracidae\src\Treehopper\TreeHopperApp\bin\Debug\TreeHopperApp.exe
 C:\Users\akango\Documents\github\Membracidae\src\Treehopper\TreeHopperApp\bin\Debug\TreeHopperApp.pdb
-C:\Users\akango\Documents\github\Membracidae\src\Treehopper\TreeHopperApp\bin\Debug\TreeHopper.dll
 C:\Users\akango\Documents\github\Membracidae\src\Treehopper\TreeHopperApp\bin\Debug\LibGit2Sharp.dll
-C:\Users\akango\Documents\github\Membracidae\src\Treehopper\TreeHopperApp\bin\Debug\TreeHopper.pdb
 C:\Users\akango\Documents\github\Membracidae\src\Treehopper\TreeHopperApp\bin\Debug\LibGit2Sharp.xml
 C:\Users\akango\Documents\github\Membracidae\src\Treehopper\TreeHopperApp\obj\Debug\TreeHopperApp.csproj.AssemblyReference.cache
 C:\Users\akango\Documents\github\Membracidae\src\Treehopper\TreeHopperApp\obj\Debug\TreeHopperApp.csproj.SuggestedBindingRedirects.cache
@@ -82,3 +80,5 @@ C:\Users\akango\Documents\github\Membracidae\src\Treehopper\TreeHopperApp\obj\De
 C:\Users\akango\Documents\github\Membracidae\src\Treehopper\TreeHopperApp\obj\Debug\TreeHopperApp.csproj.CopyComplete
 C:\Users\akango\Documents\github\Membracidae\src\Treehopper\TreeHopperApp\obj\Debug\TreeHopperApp.exe
 C:\Users\akango\Documents\github\Membracidae\src\Treehopper\TreeHopperApp\obj\Debug\TreeHopperApp.pdb
+C:\Users\akango\Documents\github\Membracidae\src\Treehopper\TreeHopperApp\bin\Debug\TreeHopperLib.dll
+C:\Users\akango\Documents\github\Membracidae\src\Treehopper\TreeHopperApp\bin\Debug\TreeHopperLib.pdb

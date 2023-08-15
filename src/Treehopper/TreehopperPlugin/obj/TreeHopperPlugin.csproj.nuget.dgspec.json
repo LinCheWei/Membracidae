@@ -4,11 +4,30 @@
     "C:\\Users\\akango\\Documents\\github\\Membracidae\\src\\Treehopper\\TreehopperPlugin\\TreeHopperPlugin.csproj": {}
   },
   "projects": {
-    "C:\\Users\\akango\\Documents\\github\\Membracidae\\src\\Treehopper\\TreeHopperLib\\TreeHopper.csproj": {
+    "C:\\Users\\akango\\Documents\\github\\Membracidae\\src\\Treehopper\\TreeHopperApp\\TreeHopperApp.csproj": {
       "restore": {
-        "projectUniqueName": "C:\\Users\\akango\\Documents\\github\\Membracidae\\src\\Treehopper\\TreeHopperLib\\TreeHopper.csproj",
-        "projectName": "TreeHopper",
-        "projectPath": "C:\\Users\\akango\\Documents\\github\\Membracidae\\src\\Treehopper\\TreeHopperLib\\TreeHopper.csproj",
+        "projectUniqueName": "C:\\Users\\akango\\Documents\\github\\Membracidae\\src\\Treehopper\\TreeHopperApp\\TreeHopperApp.csproj",
+        "projectName": "TreeHopperApp",
+        "projectPath": "C:\\Users\\akango\\Documents\\github\\Membracidae\\src\\Treehopper\\TreeHopperApp\\TreeHopperApp.csproj",
+        "frameworks": {
+          "net48": {
+            "projectReferences": {
+              "C:\\Users\\akango\\Documents\\github\\Membracidae\\src\\Treehopper\\TreeHopperLib\\TreeHopperLib.csproj": {
+                "projectPath": "C:\\Users\\akango\\Documents\\github\\Membracidae\\src\\Treehopper\\TreeHopperLib\\TreeHopperLib.csproj"
+              }
+            }
+          }
+        }
+      },
+      "frameworks": {
+        "net48": {}
+      }
+    },
+    "C:\\Users\\akango\\Documents\\github\\Membracidae\\src\\Treehopper\\TreeHopperLib\\TreeHopperLib.csproj": {
+      "restore": {
+        "projectUniqueName": "C:\\Users\\akango\\Documents\\github\\Membracidae\\src\\Treehopper\\TreeHopperLib\\TreeHopperLib.csproj",
+        "projectName": "TreeHopperLib",
+        "projectPath": "C:\\Users\\akango\\Documents\\github\\Membracidae\\src\\Treehopper\\TreeHopperLib\\TreeHopperLib.csproj",
         "frameworks": {
           "net48": {
             "projectReferences": {}
@@ -43,8 +62,11 @@
           "net48": {
             "targetAlias": "net48",
             "projectReferences": {
-              "C:\\Users\\akango\\Documents\\github\\Membracidae\\src\\Treehopper\\TreeHopperLib\\TreeHopper.csproj": {
-                "projectPath": "C:\\Users\\akango\\Documents\\github\\Membracidae\\src\\Treehopper\\TreeHopperLib\\TreeHopper.csproj"
+              "C:\\Users\\akango\\Documents\\github\\Membracidae\\src\\Treehopper\\TreeHopperApp\\TreeHopperApp.csproj": {
+                "projectPath": "C:\\Users\\akango\\Documents\\github\\Membracidae\\src\\Treehopper\\TreeHopperApp\\TreeHopperApp.csproj"
+              },
+              "C:\\Users\\akango\\Documents\\github\\Membracidae\\src\\Treehopper\\TreeHopperLib\\TreeHopperLib.csproj": {
+                "projectPath": "C:\\Users\\akango\\Documents\\github\\Membracidae\\src\\Treehopper\\TreeHopperLib\\TreeHopperLib.csproj"
               }
             }
           }
@@ -73,7 +95,7 @@
               "version": "[1.0.8.28, )"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.306\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.307\\RuntimeIdentifierGraph.json"
         }
       }
     }

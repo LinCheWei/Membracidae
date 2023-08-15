@@ -126,13 +126,25 @@
           "lib/net/XmlDiffPatch.dll": {}
         }
       },
-      "TreeHopper/1.0.0": {
+      "TreeHopperApp/1.0.0": {
         "type": "project",
+        "dependencies": {
+          "TreeHopperLib": "1.0.0"
+        },
         "compile": {
-          "bin/placeholder/TreeHopper.dll": {}
+          "bin/placeholder/TreeHopperApp.dll": {}
         },
         "runtime": {
-          "bin/placeholder/TreeHopper.dll": {}
+          "bin/placeholder/TreeHopperApp.dll": {}
+        }
+      },
+      "TreeHopperLib/1.0.0": {
+        "type": "project",
+        "compile": {
+          "bin/placeholder/TreeHopperLib.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/TreeHopperLib.dll": {}
         }
       }
     }
@@ -235,17 +247,23 @@
         "xmldiffpatch.nuspec"
       ]
     },
-    "TreeHopper/1.0.0": {
+    "TreeHopperApp/1.0.0": {
       "type": "project",
-      "path": "../TreeHopperLib/TreeHopper.csproj",
-      "msbuildProject": "../TreeHopperLib/TreeHopper.csproj"
+      "path": "../TreeHopperApp/TreeHopperApp.csproj",
+      "msbuildProject": "../TreeHopperApp/TreeHopperApp.csproj"
+    },
+    "TreeHopperLib/1.0.0": {
+      "type": "project",
+      "path": "../TreeHopperLib/TreeHopperLib.csproj",
+      "msbuildProject": "../TreeHopperLib/TreeHopperLib.csproj"
     }
   },
   "projectFileDependencyGroups": {
     ".NETFramework,Version=v4.8": [
       "Grasshopper >= 7.13.21348.13001",
       "LibGit2Sharp >= 0.27.2",
-      "TreeHopper >= 1.0.0",
+      "TreeHopperApp >= 1.0.0",
+      "TreeHopperLib >= 1.0.0",
       "XMLDiffPatch >= 1.0.8.28"
     ]
   },
@@ -276,8 +294,11 @@
         "net48": {
           "targetAlias": "net48",
           "projectReferences": {
-            "C:\\Users\\akango\\Documents\\github\\Membracidae\\src\\Treehopper\\TreeHopperLib\\TreeHopper.csproj": {
-              "projectPath": "C:\\Users\\akango\\Documents\\github\\Membracidae\\src\\Treehopper\\TreeHopperLib\\TreeHopper.csproj"
+            "C:\\Users\\akango\\Documents\\github\\Membracidae\\src\\Treehopper\\TreeHopperApp\\TreeHopperApp.csproj": {
+              "projectPath": "C:\\Users\\akango\\Documents\\github\\Membracidae\\src\\Treehopper\\TreeHopperApp\\TreeHopperApp.csproj"
+            },
+            "C:\\Users\\akango\\Documents\\github\\Membracidae\\src\\Treehopper\\TreeHopperLib\\TreeHopperLib.csproj": {
+              "projectPath": "C:\\Users\\akango\\Documents\\github\\Membracidae\\src\\Treehopper\\TreeHopperLib\\TreeHopperLib.csproj"
             }
           }
         }
@@ -306,7 +327,7 @@
             "version": "[1.0.8.28, )"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.306\\RuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.307\\RuntimeIdentifierGraph.json"
       }
     }
   }
