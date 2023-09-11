@@ -79,7 +79,7 @@ namespace TreeHopperPlugin
         {
             GH_Document doc = Instances.ActiveCanvas.Document;
             DA.GetData(0, ref open);
-            List<string> versionId = new List<string>();
+            List<String> versionId = new List<string>();
 
             if (open)
             {

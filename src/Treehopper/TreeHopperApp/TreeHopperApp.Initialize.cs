@@ -4,6 +4,7 @@ using System.Drawing;
 using System.IO;
 using System.Windows.Forms;
 using TreeHopper.Deserialize;
+using TreeHopper.VersionControl;
 
 namespace TreeHopperViewer
 {   
@@ -23,8 +24,14 @@ namespace TreeHopperViewer
     }
     // Partial class to hold the InitializeComponents() method
     public partial class MainForm
-    { 
+    {
         // Initialize the form
+        private List<string> versionId = new List<string>();
+        // Create menu items
+        ToolStripMenuItem fileMenu = new ToolStripMenuItem("File");
+        ToolStripMenuItem gitMenu = new ToolStripMenuItem("Git");
+        ToolStripMenuItem viewMenu = new ToolStripMenuItem("View");
+
         public void InitializeComponent()
         {
             // Set the form's title
@@ -38,10 +45,6 @@ namespace TreeHopperViewer
             // Create a MenuStrip control
             MenuStrip menuStrip = new MenuStrip();
 
-            // Create menu items
-            ToolStripMenuItem fileMenu = new ToolStripMenuItem("File");
-            ToolStripMenuItem gitMenu = new ToolStripMenuItem("Git");
-            ToolStripMenuItem viewMenu = new ToolStripMenuItem("View");
             // Create sub menu items
             ToolStripMenuItem openMenuItem = new ToolStripMenuItem("Open");
             ToolStripMenuItem gitVersionMenuItem = new ToolStripMenuItem("Version");
@@ -50,19 +53,45 @@ namespace TreeHopperViewer
 
             // Add the "Open" menu item to the "File" menu
             fileMenu.DropDownItems.Add(openMenuItem);
-            gitMenu.DropDownItems.Add(gitVersionMenuItem);
             viewMenu.DropDownItems.Add(rainbowMenuItem);
 
             // Add the menus to the MenuStrip control
             menuStrip.Items.Add(fileMenu);
-            menuStrip.Items.Add(gitMenu);
             menuStrip.Items.Add(viewMenu);
+
+            // Add the "Git" menu to the "File" menu
+            menuStrip.Items.Add(gitMenu);
 
             // Set the MenuStrip as the form's menu
             this.Controls.Add(menuStrip);
             rainbowMenuItem.Click += rainbowMenuItem_Click;
+
+            // Ensure versionId is populated before adding submenu items
+            PopulateGitMenu(gitMenu);
+
+            // Set the MenuStrip as the form's menu
+            //this.Controls.Add(menuStrip);
+ 
         }
-        
+
+        private void PopulateGitMenu(ToolStripMenuItem gitMenu)
+        {
+            // Clear existing submenu items
+            gitMenu.DropDownItems.Clear();
+
+            // Iterate through the list and create submenu items
+            foreach (string itemText in versionId)
+            {
+                ToolStripMenuItem subMenuItem = new ToolStripMenuItem(itemText);
+                
+                // Add an event handler for the submenu item click event if needed
+                // subMenuItem.Click += (sender, e) => HandleSubMenuClick(itemText);
+
+                // Add the submenu item to the "Git" menu
+                gitMenu.DropDownItems.Add(subMenuItem);
+            }
+        }
+
         // Event handler for the "Rainbow" menu item to toggle the rainbowEnabled flag which sets the color mode of document
         public void rainbowMenuItem_Click(object sender, EventArgs e)
         {
@@ -88,7 +117,10 @@ namespace TreeHopperViewer
             {
                 // Process the selected file
                 ProcessGrasshopperFile(openFileDialog.FileName);
+                Hopper root = new Hopper(openFileDialog.FileName);
+                versionId = root.getVersionList(true);
             }
+            PopulateGitMenu(gitMenu);
         }
 
         // Method to parse the Grasshopper file and store the information to draw
